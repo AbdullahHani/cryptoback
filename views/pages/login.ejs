@@ -1,0 +1,83 @@
+<!-- views/pages/login.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- CSS (load bootstrap from a CDN) -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-default" role="navigation" style="width: 100%; background-color: black; height: 80px; border: unset;">
+        <div class="container-fluid">
+            <div class="navbar-header"></div>
+            <!-- <img src="../assets/landboten.png" alt="Logo"> -->
+            <h3 style="color: white; font-weight: 800; margin-left: 20px;">Landboten</h3>
+        </div>
+    </nav>
+</header>
+
+<main>
+    <div class="login-container">
+        <h4 class="form-heading">Admin Login</h4>
+        <form class="login-form" action="/admin/login" method="POST">
+            <input type="text" name="email" placeholder="Email" class="input-field block center">
+            <input type="password" name="password" placeholder="Password" class="input-field block center">
+            <input type="submit" value="Login" class="block login-button center">
+        </form>
+    </div>
+</main>
+<style>
+body {
+    background-color: blanchedalmond;
+}
+.login-container {
+    display: block;
+    width: 600px;
+    height: auto;
+    margin: 200px auto;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 9px 4px 9px 4px rgba(0, 0, 0, 0.08);
+    background-color: rgba(0, 0, 0, 0.16);
+}
+.login-form {
+    align-items: center;
+}
+.input-field {
+    width: 80%;
+    height: 50px;
+    border-radius: 5px;
+    border-width: 0ch;
+    box-shadow: 9px 4px 9px 4px rgba(0, 0, 0, 0.08);
+    margin-top: 10px;
+    padding-left: 20px;
+    font-size: 18px;
+}
+.login-button {
+    background-color: royalblue;
+    border-radius: 5px;
+    border-width: 0ch;
+    width: 100px;
+    height: 40px;
+    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    margin-top: 20px;
+}
+.form-heading {
+    text-align: center;
+    font-weight: 900;
+    font-size: 20px;
+}
+.block {
+    display: block;
+}
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+</body>
+</html>
