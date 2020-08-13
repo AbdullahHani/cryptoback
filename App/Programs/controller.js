@@ -103,6 +103,11 @@ module.exports = {
             message: "The transaction hash you provided is not valid. Verify that the hash provided is correct."
           });
         }
+      } else {
+        return res.status(403).json({
+          status: "Error",
+          errHash: "Provide Transaction Hash"
+        });
       }
     } catch (error) {
       return res.status(500).json({
