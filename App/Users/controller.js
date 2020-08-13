@@ -39,6 +39,7 @@ module.exports = {
                 errUsername: "Username not available."
             });
         }
+        email = email.toLowerCase();
         const verificationCode = Math.floor(1000 + Math.random() * 9000);
         user = await UsersModel.create({
             name: name,
@@ -114,6 +115,7 @@ module.exports = {
   Login: async (req, res) => {
     try {
         let { email, password } = req.body;
+        email = email.toLowerCase();
         let user = await UsersModel.findOne({ email: email});
         if ( !user ) {
             return res.status(409).json({
