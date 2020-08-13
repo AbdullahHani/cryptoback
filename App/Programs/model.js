@@ -53,6 +53,10 @@ const programSchema = new Schema({
     invoice: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Invoices'
+    },
+    workingCapital: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true
@@ -72,8 +76,8 @@ programSchema.pre('save', async function (next) {
     const plan = await PlanModel.findOne({
         name: selectedPlan
     });
+    this.workingCapital = this.investment + (this.investment * (plan.capitalBonus / 100));
     this.plan = plan._id;
-    this.totalDays = 5 * plan.weeks;
     const user = await UserModel.findOne({_id: this.user}, {password: 0});
     planSubscription(user, plan);
     next();

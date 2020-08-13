@@ -5,6 +5,9 @@ const ProgramModel = require('../App/Programs/model');
 const UserModel = require('../App/Users/model');
 const PayoutModel = require('../App/Payouts/model');
 
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const environment = require('dotenv');
 environment.config();
 
@@ -16,6 +19,7 @@ const weeklyCommissionQueue = new Queue('weeklyCommission', redisOptions);
 setQueues([weeklyCommissionQueue]);
 
 weeklyCommissionQueue.process( async (job, done) => {
+    let table = '<table style="width: 100%; text-align: center; table-layout: fixed; border-collapse: collapse; border: 1px solid black;"><tr><th style="border: 1px solid black;">Username</th><th style="border: 1px solid black;">Email</th><th style="border: 1px solid black;">Amount</th><th style="border: 1px solid black;">Wallet Address</th></tr>';
     const programs = await ProgramModel.find({
         payWeek: 'Yes'
     });
@@ -26,11 +30,6 @@ weeklyCommissionQueue.process( async (job, done) => {
             weeklyCommission: 0,
             payWeek: 'No'
         });
-        if ((program.days + 1) === program.totalDays) {
-            await ProgramModel.updateOne({ _id: program._id}, {
-                programEnds: 'Yes'
-            });
-        }
         const runningPrograms = await ProgramModel.find({
             user: program.user._id,
             programEnds: 'No'
@@ -55,7 +54,19 @@ weeklyCommissionQueue.process( async (job, done) => {
                 status: 'Inactive'
             });
         }
-    }
+        table += `<tr><td style="border: 1px solid black;">${program.user.userName}</td><td style="border: 1px solid black;">${program.user.email}</td><td style="border: 1px solid black;">${program.weeklyCommission}</td><td style="border: 1px solid black;">${program.user.walletId}</td></tr>`;
+    }        
+    let emailMessage = `<strong>Hello Admin!</strong><br><p>The weekly payout list is ready. You have to pay this amount in BCH to the following users on their address.</p><br>`;
+    emailMessage += `<h3>User/Payout List</h3><br>` + table + `<br><h3>Thank You!</h3>`;
+
+    const msg = {
+        from: process.env.RECEIVER_EMAIL,
+        to: process.env.SENDER_EMAIL,
+        subject: `Odeffe: Weekly Payouts`,
+        text: emailMessage,
+        html: emailMessage
+    };
+    await sgMail.send(msg);
     done();
 });
 
