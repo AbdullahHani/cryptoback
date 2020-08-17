@@ -20,6 +20,10 @@ const PayoutSchema = new Schema({
     program: {
         type: String,
         trim: true
+    },
+    hash: {
+        type: String,
+        trim: true
     }
 }, {
     timestamps: true

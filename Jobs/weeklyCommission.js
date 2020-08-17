@@ -46,7 +46,8 @@ weeklyCommissionQueue.process( async (job, done) => {
             user: program.user._id,
             amount: program.weeklyCommission,
             plan: program.plan._id,
-            program: program._id
+            program: program._id,
+            hash: program.hash
         });
         weeklyPayout(user, program.plan, program.weeklyCommission);
         if (runningPrograms === 0) {

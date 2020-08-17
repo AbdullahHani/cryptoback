@@ -57,6 +57,10 @@ const programSchema = new Schema({
     workingCapital: {
         type: Number,
         default: 0
+    },
+    hash: {
+        type: String,
+        trim: true
     }
 }, {
     timestamps: true

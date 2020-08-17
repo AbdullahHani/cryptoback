@@ -68,7 +68,8 @@ module.exports = {
           await ProgramModel.create({
             user: req.decoded._id,
             investment: investedMoney,
-            btc: payedAmount
+            btc: payedAmount,
+            hash: hash
           });
           await UserModel.updateOne({_id: req.decoded._id}, {
             status: 'Active'
@@ -110,6 +111,12 @@ module.exports = {
         });
       }
     } catch (error) {
+      if (error.statusCode === 404) {
+        return res.status(500).json({
+          status: "Error",
+          message: "Wrong transaction hash entered"
+        });
+      }
       return res.status(500).json({
         status: "Error",
         message: error.message
