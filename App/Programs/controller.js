@@ -3,9 +3,7 @@ const AdminModel = require('../Admin/model');
 const AffiliationModel = require('../Affiliations/model');
 const AffiliationReport = require('../AffiliationReport/model');
 const UserModel = require('../Users/model');
-
-const BlockchainExc = require('blockchain.info/exchange');
-const Receive = require('blockchain.info/Receive');
+const ConfigurationModel = require('../Configurations/model');
 
 require('dotenv').config();
 
@@ -55,53 +53,71 @@ module.exports = {
     try {
       const { hash } = req.body;
       if (hash) {
-        const transaction = await request({
-          url: `https://api.blockchair.com/bitcoin-cash/dashboards/transaction/${hash}`,
-          method: 'GET',
-          json: true
-        });
-        const data = transaction.data[hash];
-        if (data) {
-          const payedAmount = data.outputs[1].value / 10000000;
-          const amountInDollar = data.outputs[1].value_usd;
-          const investedMoney = amountInDollar - (amountInDollar * 0.03);
-          await ProgramModel.create({
-            user: req.decoded._id,
-            investment: investedMoney,
-            btc: payedAmount,
-            hash: hash
+        const alreadyExist = await ProgramModel.find({ hash: hash }).estimatedDocumentCount();
+        if (alreadyExist < 1) {
+          const transaction = await request({
+            url: `https://api.blockchair.com/bitcoin-cash/dashboards/transaction/${hash}`,
+            method: 'GET',
+            json: true
           });
-          await UserModel.updateOne({_id: req.decoded._id}, {
-            status: 'Active'
-          });
-          const affiliations = await AffiliationModel.find({
-            user: req.decoded._id
-          });
-          for (const affiliation of affiliations) {
-            const commission = ( payedAmount - ( payedAmount * 0.03 )) * (affiliation.commissionPercentage / 100);
-            const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
-            const balance = user.balance + commission;
-            const affBonus = user.affiliationBonus + commission;
-            await UserModel.updateOne({ _id: user._id }, {
-              balance: balance,
-              affiliationBonus: affBonus
-            });
-            await AffiliationReport.create({
-              referralId: user._id,
-              user: req.decoded._id,
-              level: affiliation.level,
-              percent: affiliation.commissionPercentage,
-              amount: commission
+          const data = transaction.data[hash];
+          if (data) {
+            const configuration = await ConfigurationModel.find({});
+            const walletId = configuration[0].walletAddress;
+            if (data.outputs[1].recipient === walletId) {
+              const payedAmount = data.outputs[1].value / 10000000;
+              const amountInDollar = data.outputs[1].value_usd;
+              const investedMoney = amountInDollar - (amountInDollar * configuration[0].extra / 100);
+              await ProgramModel.create({
+                user: req.decoded._id,
+                investment: investedMoney,
+                btc: payedAmount,
+                hash: hash
+              });
+              await UserModel.updateOne({_id: req.decoded._id}, {
+                status: 'Active'
+              });
+              const affiliations = await AffiliationModel.find({
+                user: req.decoded._id
+              });
+              for (const affiliation of affiliations) {
+                const commission = ( payedAmount - ( payedAmount * 0.03 )) * (affiliation.commissionPercentage / 100);
+                const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
+                const balance = user.balance + commission;
+                const affBonus = user.affiliationBonus + commission;
+                await UserModel.updateOne({ _id: user._id }, {
+                  balance: balance,
+                  affiliationBonus: affBonus
+                });
+                await AffiliationReport.create({
+                  referralId: user._id,
+                  user: req.decoded._id,
+                  level: affiliation.level,
+                  percent: affiliation.commissionPercentage,
+                  amount: commission
+                });
+              }
+              return res.status(200).json({
+                status: "Successfull",
+                message: "Your Plan have been successfully started."
+              });
+            }
+            else {
+              return res.status(403).json({
+                status: "Failed",
+                message: "The transaction hash you provided is not valid. Verify that the hash provided is correct."
+              });
+            }
+          } else {
+            return res.status(403).json({
+              status: "Failed",
+              message: "The transaction hash you provided is not valid. Verify that the hash provided is correct."
             });
           }
-          return res.status(200).json({
-            status: "Successfull",
-            message: "Your Plan have been successfully started."
-          });
         } else {
           return res.status(403).json({
-            status: "Failed",
-            message: "The transaction hash you provided is not valid. Verify that the hash provided is correct."
+            status: "Error",
+            errHash: "Program already started"
           });
         }
       } else {
