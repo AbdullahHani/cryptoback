@@ -53,8 +53,8 @@ module.exports = {
     try {
       const { hash } = req.body;
       if (hash) {
-        const alreadyExist = await ProgramModel.find({ hash: hash }).estimatedDocumentCount();
-        if (alreadyExist < 1) {
+        const alreadyExist = await ProgramModel.findOne({ hash: hash });
+        if (!alreadyExist) {
           const transaction = await request({
             url: `https://api.blockchair.com/bitcoin-cash/dashboards/transaction/${hash}`,
             method: 'GET',
