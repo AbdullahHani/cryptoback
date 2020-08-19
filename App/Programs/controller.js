@@ -65,7 +65,7 @@ module.exports = {
             const configuration = await ConfigurationModel.find({});
             const walletId = configuration[0].walletAddress;
             if (data.outputs[1].recipient === walletId) {
-              const payedAmount = data.outputs[1].value / 10000000;
+              const payedAmount = data.outputs[1].value / 100000000;
               const amountInDollar = data.outputs[1].value_usd;
               const investedMoney = amountInDollar - (amountInDollar * configuration[0].extra / 100);
               await ProgramModel.create({
