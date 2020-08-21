@@ -68,7 +68,7 @@ module.exports = {
               const payedAmount = data.outputs[1].value / 100000000;
               const amountInDollar = data.outputs[1].value_usd;
               const investedMoney = amountInDollar - (amountInDollar * configuration[0].extra / 100);
-              if (investedMoney >= 100) {
+              if (investedMoney >= 1) {
                 await ProgramModel.create({
                   user: req.decoded._id,
                   investment: investedMoney,
@@ -150,13 +150,19 @@ module.exports = {
   ManualStart: async ( req, res ) => {
     try {
       const {
-        username,
+        userName,
         amountInDollar,
         amountInBCH,
         hash
       } = req.body;
-      const User = await UserModel.findOne({userName: username}, { password: 0 });
-      if (amountInDollar > 100) {
+      const User = await UserModel.findOne({userName: userName}, { password: 0 });
+      if (!User) {
+        return res.status(403).json({
+          status: "Failed",
+          errUser: "User does not exists"
+        });
+      }
+      if (amountInDollar >= 100) {
         await ProgramModel.create({
           user: User._id,
           investment: amountInDollar,
@@ -193,7 +199,7 @@ module.exports = {
       } else {
         return res.status(401).json({
           status: "Failed",
-          errDollar: "Program can not start on lower than $100"
+          errAmount: "Program can not start on lower than $100"
         });
       }
     } catch (error) {
