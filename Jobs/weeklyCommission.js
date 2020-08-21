@@ -56,7 +56,8 @@ weeklyCommissionQueue.process( async (job, done) => {
             });
         }
         table += `<tr><td style="border: 1px solid black;">${program.user.userName}</td><td style="border: 1px solid black;">${program.user.email}</td><td style="border: 1px solid black;">${program.weeklyCommission}</td><td style="border: 1px solid black;">${program.user.walletId}</td></tr>`;
-    }        
+    }
+    table += '</table><br>';      
     let emailMessage = `<strong>Hello Admin!</strong><br><p>The weekly payout list is ready. You have to pay this amount in BCH to the following users on their address.</p><br>`;
     emailMessage += `<h3>User/Payout List</h3><br>` + table + `<br><h3>Thank You!</h3>`;
 
@@ -73,6 +74,6 @@ weeklyCommissionQueue.process( async (job, done) => {
 
 module.exports = async () => {
     await weeklyCommissionQueue.add({}, {
-        repeat: {cron: '30 23 * * 7'}
+        repeat: {cron: '28 10 * * *'}
     });
 }

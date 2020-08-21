@@ -19,7 +19,7 @@ weeklyPayoutEmailQueue.process(async (job, done) => {
     const amount = job.data.amount;
     let message = '';
     message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
-                `<p>$${amount} have been successfully added to your account from your ${plan.name} subscribed </p><br>` +
+                `<p>${amount} BCH have been successfully added to your account from your ${plan.name} plan subscribed. </p><br>` +
                 '<br><h3><b>Thank You!</b></h3>'
     const msg = {
         to: user.email,

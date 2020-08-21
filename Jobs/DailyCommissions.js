@@ -26,14 +26,14 @@ dailyCommissionQueue.process( async (job, done) => {
         method: 'GET',
         json: true
     });
-    const bchValue = currentRates.data.rates['bch'].value
-    const usdValue = currentRates.data.rates['usd'].value
+    const bchValue = currentRates.rates['bch'].value
+    const usdValue = currentRates.rates['usd'].value
     const usdRate = usdValue / bchValue;
     const bchRate = bchValue / usdValue;
     for (const program of programs) {
             commissionToAdd = 0;
             const tCommission = program.totalCommission * usdRate;
-            const dCommission = (program.workingCapital * program.plan.dailyCommision / 100) * bchRate;
+            const dCommission = (program.workingCapital * program.plan.dailyCommission / 100) * bchRate;
             const wCommission = (program.weeklyCommission + dCommission) * usdRate;
             if (tCommission < (program.investment * 1.8)) {
                 if ((tCommission + wCommission) <= (program.investment * 1.8)) {
@@ -71,6 +71,6 @@ dailyCommissionQueue.process( async (job, done) => {
 
 module.exports = async () => {
     await dailyCommissionQueue.add({}, {
-        repeat: {cron: '0 23 * * 1-5'}
+        repeat: {cron: '13 10 * * *'}
     });
 }

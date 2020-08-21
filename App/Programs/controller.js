@@ -68,39 +68,47 @@ module.exports = {
               const payedAmount = data.outputs[1].value / 100000000;
               const amountInDollar = data.outputs[1].value_usd;
               const investedMoney = amountInDollar - (amountInDollar * configuration[0].extra / 100);
-              await ProgramModel.create({
-                user: req.decoded._id,
-                investment: investedMoney,
-                btc: payedAmount,
-                hash: hash
-              });
-              await UserModel.updateOne({_id: req.decoded._id}, {
-                status: 'Active'
-              });
-              const affiliations = await AffiliationModel.find({
-                user: req.decoded._id
-              });
-              for (const affiliation of affiliations) {
-                const commission = ( payedAmount - ( payedAmount * 0.03 )) * (affiliation.commissionPercentage / 100);
-                const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
-                const balance = user.balance + commission;
-                const affBonus = user.affiliationBonus + commission;
-                await UserModel.updateOne({ _id: user._id }, {
-                  balance: balance,
-                  affiliationBonus: affBonus
-                });
-                await AffiliationReport.create({
-                  referralId: user._id,
+              if (investedMoney >= 100) {
+                await ProgramModel.create({
                   user: req.decoded._id,
-                  level: affiliation.level,
-                  percent: affiliation.commissionPercentage,
-                  amount: commission
+                  investment: investedMoney,
+                  btc: payedAmount,
+                  hash: hash
+                });
+                await UserModel.updateOne({_id: req.decoded._id}, {
+                  status: 'Active'
+                });
+                const affiliations = await AffiliationModel.find({
+                  user: req.decoded._id
+                });
+                for (const affiliation of affiliations) {
+                  const commission = ( payedAmount - ( payedAmount * 0.03 )) * (affiliation.commissionPercentage / 100);
+                  const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
+                  const balance = user.balance + commission;
+                  const affBonus = user.affiliationBonus + commission;
+                  await UserModel.updateOne({ _id: user._id }, {
+                    balance: balance,
+                    affiliationBonus: affBonus
+                  });
+                  await AffiliationReport.create({
+                    referralId: user._id,
+                    user: req.decoded._id,
+                    level: affiliation.level,
+                    percent: affiliation.commissionPercentage,
+                    amount: commission
+                  });
+                }
+                return res.status(200).json({
+                  status: "Successfull",
+                  message: "Your Plan have been successfully started."
                 });
               }
-              return res.status(200).json({
-                status: "Successfull",
-                message: "Your Plan have been successfully started."
-              });
+              else {
+                return res.status(500).json({
+                  status: "Failed",
+                  message: "The amount you transferred is low to subscribe to our plan. Contact the support for manual activation."
+                })
+              }
             }
             else {
               return res.status(403).json({

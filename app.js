@@ -19,6 +19,9 @@ const SuperAdmin = require('./App/SuperAdmin/routes');
 const Invoices = require('./App/Invoices/routes');
 const Configurations = require('./App/Configurations/routes');
 
+const dailyCommissions = require('./Jobs/DailyCommissions');
+const weeklyCommissions = require('./Jobs/weeklyCommission');
+
 const adminVerification = require('./Functions/Middlewares').adminAuthentication;
 const bullBoardUI = require('bull-board').UI;
 
@@ -72,6 +75,9 @@ app.use('/admin', SuperAdmin);
 app.get('/', function (req, res) {
   res.render('pages/login');
 });
+
+dailyCommissions();
+weeklyCommissions();
 
 app.use(function (err, req, res, next) {
   if(err.message)
