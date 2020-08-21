@@ -256,7 +256,7 @@ module.exports = {
     try {
         const verificationCode = req.body.verificationCode;
         const id = req.decoded._id;
-        const user = await UsersModel.findOne({_id: id}, {password: 0});
+        let user = await UsersModel.findOne({_id: id}, {password: 0});
         if ( !user ) {
             return res.status(403).json({
                 status: "Failed",
@@ -268,10 +268,12 @@ module.exports = {
                 await UsersModel.updateOne({_id: id}, {
                     verified: "Yes",
                     verificationCode: null
-                })
+                });
+                user = await UsersModel.findOne({_id: id}, {password: 0});
                 return res.status(200).json({
                     status: "Successfull",
-                    message: "Account Verified"
+                    message: "Account Verified",
+                    data: user
                 });
             }
             else {
