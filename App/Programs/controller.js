@@ -146,5 +146,61 @@ module.exports = {
         message: error.message
       });
     }
+  },
+  ManualStart: async ( req, res ) => {
+    try {
+      const {
+        username,
+        amountInDollar,
+        amountInBCH,
+        hash
+      } = req.body;
+      const User = await UserModel.findOne({userName: username}, { password: 0 });
+      if (amountInDollar > 100) {
+        await ProgramModel.create({
+          user: User._id,
+          investment: amountInDollar,
+          btc: amountInBCH,
+          hash: hash
+        });
+        await UserModel.updateOne({_id: User._id}, {
+          status: 'Active'
+        });
+        const affiliations = await AffiliationModel.find({
+          user: User._id
+        });
+        for (const affiliation of affiliations) {
+          const commission = ( amountInBCH) * (affiliation.commissionPercentage / 100);
+          const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
+          const balance = user.balance + commission;
+          const affBonus = user.affiliationBonus + commission;
+          await UserModel.updateOne({ _id: user._id }, {
+            balance: balance,
+            affiliationBonus: affBonus
+          });
+          await AffiliationReport.create({
+            referralId: user._id,
+            user: User._id,
+            level: affiliation.level,
+            percent: affiliation.commissionPercentage,
+            amount: commission
+          });
+        }
+        return res.status(200).json({
+          status: "Successful",
+          message: "Successfully started Program"
+        });
+      } else {
+        return res.status(401).json({
+          status: "Failed",
+          errDollar: "Program can not start on lower than $100"
+        });
+      }
+    } catch (error) {
+      return res.status(500).json({
+        status: "Error",
+        message: error.message
+      });
+    }
   }
 }
