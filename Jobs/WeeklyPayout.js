@@ -16,7 +16,7 @@ setQueues([weeklyPayoutEmailQueue]);
 weeklyPayoutEmailQueue.process(async (job, done) => {
     const user = job.data.user;
     const plan = job.data.plan;
-    const amount = job.data.amount;
+    const amount = job.data.amount.toFixed(4);
     let message = '';
     message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                 `<p>${amount} BCH have been successfully added to your account from your ${plan.name} plan subscribed. </p><br>` +

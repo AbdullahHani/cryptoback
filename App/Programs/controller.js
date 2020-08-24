@@ -72,7 +72,7 @@ module.exports = {
                 await ProgramModel.create({
                   user: req.decoded._id,
                   investment: investedMoney,
-                  btc: payedAmount,
+                  btc: payedAmount - ( payedAmount * configuration[0].extra / 100 ),
                   hash: hash
                 });
                 await UserModel.updateOne({_id: req.decoded._id}, {
@@ -82,7 +82,7 @@ module.exports = {
                   user: req.decoded._id
                 });
                 for (const affiliation of affiliations) {
-                  const commission = ( payedAmount - ( payedAmount * 0.03 )) * (affiliation.commissionPercentage / 100);
+                  const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
                   const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
                   const balance = user.balance + commission;
                   const affBonus = user.affiliationBonus + commission;
@@ -177,7 +177,7 @@ module.exports = {
         });
         for (const affiliation of affiliations) {
           const commission = ( amountInBCH) * (affiliation.commissionPercentage / 100);
-          const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
+          const user = await UserModel.findOne({ _id: affiliation.referralId._id },{ password: 0 });
           const balance = user.balance + commission;
           const affBonus = user.affiliationBonus + commission;
           await UserModel.updateOne({ _id: user._id }, {

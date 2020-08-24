@@ -80,7 +80,7 @@ programSchema.pre('save', async function (next) {
     const plan = await PlanModel.findOne({
         name: selectedPlan
     });
-    this.workingCapital = this.investment + (this.investment * (plan.capitalBonus / 100));
+    this.workingCapital = this.btc + (this.btc * (plan.capitalBonus / 100));
     this.plan = plan._id;
     const user = await UserModel.findOne({_id: this.user}, {password: 0});
     planSubscription(user, plan);
