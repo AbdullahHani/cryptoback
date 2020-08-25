@@ -23,6 +23,10 @@ const AffiliationReportsSchema = new Schema({
     btc: {
         type: Number,
         default: 0
+    },
+    program: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Programs'
     }
 }, {
     timestamps: true
@@ -31,6 +35,7 @@ const AffiliationReportsSchema = new Schema({
 var autoPopulateReplies = function (next) {
     this.populate('user');
     this.populate('referralId');
+    this.populate('program');
     next();
 };
 

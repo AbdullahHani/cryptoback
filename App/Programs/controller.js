@@ -69,7 +69,7 @@ module.exports = {
               const amountInDollar = data.outputs[1].value_usd;
               const investedMoney = amountInDollar - (amountInDollar * configuration[0].extra / 100);
               if (investedMoney >= 1) {
-                await ProgramModel.create({
+                const program = await ProgramModel.create({
                   user: req.decoded._id,
                   investment: investedMoney,
                   btc: payedAmount - ( payedAmount * configuration[0].extra / 100 ),
@@ -82,21 +82,24 @@ module.exports = {
                   user: req.decoded._id
                 });
                 for (const affiliation of affiliations) {
-                  const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
-                  const user = await UserModel.findOne({ _id: affiliation.referralId },{ password: 0 });
-                  const balance = user.balance + commission;
-                  const affBonus = user.affiliationBonus + commission;
-                  await UserModel.updateOne({ _id: user._id }, {
-                    balance: balance,
-                    affiliationBonus: affBonus
-                  });
-                  await AffiliationReport.create({
-                    referralId: user._id,
-                    user: req.decoded._id,
-                    level: affiliation.level,
-                    percent: affiliation.commissionPercentage,
-                    amount: commission
-                  });
+                  if (affiliation.referralId.status === "Active") {
+                    const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
+                    const user = await UserModel.findOne({ _id: affiliation.referralId._id },{ password: 0 });
+                    const balance = user.balance + commission;
+                    const affBonus = user.affiliationBonus + commission;
+                    await UserModel.updateOne({ _id: user._id }, {
+                      balance: balance,
+                      affiliationBonus: affBonus
+                    });
+                    await AffiliationReport.create({
+                      referralId: user._id,
+                      user: req.decoded._id,
+                      level: affiliation.level,
+                      percent: affiliation.commissionPercentage,
+                      amount: commission,
+                      program: program._id
+                    });
+                  }
                 }
                 return res.status(200).json({
                   status: "Successfull",
@@ -155,6 +158,13 @@ module.exports = {
         amountInBCH,
         hash
       } = req.body;
+      const alreadyExist = await ProgramModel.findOne({ hash: hash });
+      if(alreadyExist) {
+        return res.status(403).json({
+          status: "Failed",
+          message: "Program already started against this hash"
+        });
+      }
       const User = await UserModel.findOne({userName: userName}, { password: 0 });
       if (!User) {
         return res.status(403).json({
@@ -163,7 +173,7 @@ module.exports = {
         });
       }
       if (amountInDollar >= 100) {
-        await ProgramModel.create({
+        const program = await ProgramModel.create({
           user: User._id,
           investment: amountInDollar,
           btc: amountInBCH,
@@ -176,21 +186,24 @@ module.exports = {
           user: User._id
         });
         for (const affiliation of affiliations) {
-          const commission = ( amountInBCH) * (affiliation.commissionPercentage / 100);
-          const user = await UserModel.findOne({ _id: affiliation.referralId._id },{ password: 0 });
-          const balance = user.balance + commission;
-          const affBonus = user.affiliationBonus + commission;
-          await UserModel.updateOne({ _id: user._id }, {
-            balance: balance,
-            affiliationBonus: affBonus
-          });
-          await AffiliationReport.create({
-            referralId: user._id,
-            user: User._id,
-            level: affiliation.level,
-            percent: affiliation.commissionPercentage,
-            amount: commission
-          });
+          if (affiliation.referralId.status === 'Active') {
+            const commission = ( amountInBCH) * (affiliation.commissionPercentage / 100);
+            const user = await UserModel.findOne({ _id: affiliation.referralId._id },{ password: 0 });
+            const balance = user.balance + commission;
+            const affBonus = user.affiliationBonus + commission;
+            await UserModel.updateOne({ _id: user._id }, {
+              balance: balance,
+              affiliationBonus: affBonus
+            });
+            await AffiliationReport.create({
+              referralId: user._id,
+              user: User._id,
+              level: affiliation.level,
+              percent: affiliation.commissionPercentage,
+              amount: commission,
+              program: program._id
+            });
+          }
         }
         return res.status(200).json({
           status: "Successful",
