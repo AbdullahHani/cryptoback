@@ -13,6 +13,10 @@ const changeWalletJob = require('../../Jobs/WalletOTP');
 
 environment.config();
 
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+
 module.exports = {
   Create: async (req, res) => {
     try {
@@ -481,6 +485,37 @@ module.exports = {
                 weekUsers: weekUsers.length,
                 weekPrograms: weekPrograms.length
             }
+        });
+    } catch (error) {
+        return res.status(500).json({
+            status: "Error",
+            message: error.message
+        });
+    }
+  },
+  Resend: async (req, res) => {
+    try {
+        const id = req.decoded._id;
+        const verificationCode = Math.floor(1000 + Math.random() * 9000);
+        await UsersModel.updateOne({ _id: id }, {
+            verificationCode: verificationCode.toString()
+        });
+        const user = await UsersModel.findOne({_id: id}, {password: 0});
+        let message = '';
+        message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
+                    `<p>Your four digit Code for verification is </p><h3>${user.verificationCode}</h3><br>` +
+                    '<br><h3><b>Thank You!</b></h3>'
+        const msg = {
+            to: user.email,
+            from: process.env.SENDER_EMAIL,
+            subject: `Odeffe: User Verification Code`,
+            text: message,
+            html: message
+        };
+        await sgMail.send(msg);
+        return res.status(200).json({
+            status: "Successful",
+            message: "Verification Code has been send to you email address"
         });
     } catch (error) {
         return res.status(500).json({
