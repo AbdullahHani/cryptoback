@@ -51,6 +51,7 @@ module.exports = {
   },
   Create: async (req, res) => {
     try {
+      let output = null;
       const { hash } = req.body;
       if (hash) {
         const alreadyExist = await ProgramModel.findOne({ hash: hash });
@@ -64,9 +65,14 @@ module.exports = {
           if (data) {
             const configuration = await ConfigurationModel.find({});
             const walletId = configuration[0].walletAddress;
-            if (data.outputs[1].recipient === walletId) {
-              const payedAmount = data.outputs[1].value / 100000000;
-              const amountInDollar = data.outputs[1].value_usd;
+            for (const out of data.outputs) {
+              if (out.recipient === walletId) {
+                output = out
+              }
+            }
+            if (output) {
+              const payedAmount = output.value / 100000000;
+              const amountInDollar = output.value_usd;
               const investedMoney = amountInDollar - (amountInDollar * configuration[0].extra / 100);
               if (investedMoney >= 1) {
                 const program = await ProgramModel.create({
