@@ -10,7 +10,7 @@ const redisOptions = require('../constant/redisConnection');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const userRegistrationEmailQueue = new Queue('userRegistrationEmail', redisOptions);
+const userRegistrationEmailQueue = new Queue('UserRegistrationEmail', redisOptions);
 setQueues([userRegistrationEmailQueue]);
 
 userRegistrationEmailQueue.process(async (job, done) => {

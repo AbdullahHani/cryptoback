@@ -10,7 +10,7 @@ const redisOptions = require('../constant/redisConnection');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const weeklyPayoutEmailQueue = new Queue('weeklyPayoutEmail', redisOptions);
+const weeklyPayoutEmailQueue = new Queue('WeeklyPayoutEmail', redisOptions);
 setQueues([weeklyPayoutEmailQueue]);
 
 weeklyPayoutEmailQueue.process(async (job, done) => {

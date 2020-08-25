@@ -15,7 +15,7 @@ const redisOptions = require('../constant/redisConnection');
 
 const weeklyPayout = require('./WeeklyPayout');
 
-const weeklyCommissionQueue = new Queue('weeklyCommission', redisOptions);
+const weeklyCommissionQueue = new Queue('WeeklyCommission', redisOptions);
 setQueues([weeklyCommissionQueue]);
 
 weeklyCommissionQueue.process( async (job, done) => {

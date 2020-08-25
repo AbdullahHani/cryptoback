@@ -10,7 +10,7 @@ const redisOptions = require('../constant/redisConnection');
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-const walletOTPEmailQueue = new Queue('walletOTPEmail', redisOptions);
+const walletOTPEmailQueue = new Queue('WalletOTPEmail', redisOptions);
 setQueues([walletOTPEmailQueue]);
 
 walletOTPEmailQueue.process(async (job, done) => {
