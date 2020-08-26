@@ -85,7 +85,6 @@ dailyCommissionQueue.process( async (job, done) => {
                 plan: program.plan._id,
                 program: program._id
             });
-            console.log("hello");
     }
     done();
 });
