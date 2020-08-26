@@ -51,7 +51,7 @@ module.exports = {
   Update: async (req, res) => {
     try {
         let id = req.params.id;
-            const plan = await planModel.update({_id: id}, {
+            const plan = await planModel.updateOne({_id: id}, {
                 $set: req.body
             });
             return res.status(200).json({

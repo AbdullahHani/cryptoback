@@ -139,7 +139,7 @@ module.exports = {
                     process.env.TOKEN_SECRET,
                     { expiresIn: "7 days" }
                 );
-                await UsersModel.update({_id: user.id}, {
+                await UsersModel.updateOne({_id: user.id}, {
                     token: token
                 });
                 user.token = token;

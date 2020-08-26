@@ -28,7 +28,7 @@ module.exports = {
             process.env.TOKEN_SECRET,
             { expiresIn: "7 days" }
         );
-        await adminModel.update({_id: admin.id}, {
+        await adminModel.updateOne({_id: admin.id}, {
             token: token
         });
         return res.status(200).json({
@@ -66,7 +66,7 @@ module.exports = {
                     process.env.TOKEN_SECRET,
                     { expiresIn: "7 days" }
                 );
-                await adminModel.update({_id: admin.id}, {
+                await adminModel.updateOne({_id: admin.id}, {
                     token: token
                 });
                 admin.token = token;
@@ -143,7 +143,7 @@ module.exports = {
             });
         }
         else {
-            const admin = await adminModel.update({_id: id}, {
+            const admin = await adminModel.updateOne({_id: id}, {
                 name: name,
                 email: email
             });

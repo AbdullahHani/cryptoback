@@ -19,7 +19,7 @@ setQueues([dailyCommissionQueue]);
 
 dailyCommissionQueue.process( async (job, done) => {
     let commission = 0, commissionToAdd = 0;
-    let runningPrograms = null;
+    let runningPrograms = [];
     const programs = await ProgramModel.find({
         programEnds: 'No'
     });
@@ -49,7 +49,7 @@ dailyCommissionQueue.process( async (job, done) => {
                             user: program.user._id,
                             programEnds: 'No'
                         });
-                        if (!runningPrograms) {
+                        if (runningPrograms.length < 1) {
                             await UsersModel.updateOne({_id: program.user._id}, {
                                 status: 'Inactive'
                             });
@@ -61,12 +61,12 @@ dailyCommissionQueue.process( async (job, done) => {
                     commission = program.weeklyCommission + commissionToAdd;
                     await ProgramModel.updateOne({ _id: program._id }, {
                         programEnds: 'Yes'
-                    });
+                    }); 
                     runningPrograms = await ProgramModel.find({
                         user: program.user._id,
                         programEnds: 'No'
                     });
-                    if (!runningPrograms) {
+                    if (runningPrograms.length < 1) {
                         await UsersModel.updateOne({_id: program.user._id}, {
                             status: 'Inactive'
                         });
