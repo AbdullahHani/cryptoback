@@ -71,6 +71,6 @@ dailyCommissionQueue.process( async (job, done) => {
 
 module.exports = async () => {
     await dailyCommissionQueue.add({}, {
-        repeat: {cron: '*/2 * * * *'}
+        repeat: {cron: '* * * * * *'}
     });
 }
