@@ -74,6 +74,6 @@ weeklyCommissionQueue.process( async (job, done) => {
 
 module.exports = async () => {
     await weeklyCommissionQueue.add({}, {
-        repeat: {cron: '*/1 * * * *'}
+        repeat: {cron: '* * * * * *'}
     });
 }
