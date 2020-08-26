@@ -24,8 +24,8 @@ module.exports = {
             password,
             referralLink
         } = req.body;
+        email = email.toLowerCase();
         userName = userName.toLowerCase();
-        referralLink = referralLink.toLowerCase();
         let token = "", user = {};
         let existingAccount = await UsersModel.findOne({email: email}).count();
         if ( existingAccount > 0) {
@@ -42,7 +42,6 @@ module.exports = {
                 errUsername: "Username not available."
             });
         }
-        email = email.toLowerCase();
         const verificationCode = Math.floor(1000 + Math.random() * 9000);
         user = await UsersModel.create({
             name: name,
@@ -60,6 +59,7 @@ module.exports = {
         });
         user = await UsersModel.findOne({_id: user.id}, {password: 0, verificationCode: 0});
         if ( referralLink ) {
+            referralLink = referralLink.toLowerCase();
             const userOne = await UsersModel.findOne({userName: referralLink}, {password: 0});
             if (userOne) {
                 await UsersModel.updateOne({ _id: userOne.id }, {
