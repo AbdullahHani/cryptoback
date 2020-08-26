@@ -25,7 +25,6 @@ module.exports = {
             referralLink
         } = req.body;
         userName = userName.toLowerCase();
-        referralLink = referralLink.toLowerCase();
         let token = "", user = {};
         let existingAccount = await UsersModel.findOne({email: email}).count();
         if ( existingAccount > 0) {
