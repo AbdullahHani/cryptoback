@@ -16,7 +16,6 @@ const Programs = require('./App/Programs/routes');
 const Payouts = require('./App/Payouts/routes');
 const DPayouts = require('./App/DPayouts/routes');
 const SuperAdmin = require('./App/SuperAdmin/routes');
-const Invoices = require('./App/Invoices/routes');
 const Configurations = require('./App/Configurations/routes');
 
 const dailyCommissions = require('./Jobs/DailyCommissions');
@@ -67,7 +66,6 @@ app.use('/api/reports', AffReports);
 app.use('/api/programs', Programs);
 app.use('/api/payouts', Payouts);
 app.use('/api/dailypayouts', DPayouts);
-app.use('/invoices', Invoices);
 app.use('/api/configurations', Configurations);
 app.use('/admin/schedule', adminVerification, bullBoardUI);
 app.use('/admin', SuperAdmin);

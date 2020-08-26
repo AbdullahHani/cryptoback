@@ -74,7 +74,7 @@ module.exports = {
         const payouts = await PayoutModel.find({program: program._id});
         data.push(0);
         for (const payout of payouts) {
-          data.push(payout.amount.toFixed(5));
+          data.push(payout.amount.toFixed(4));
         }
         const obj = {
           name: program.plan.name,

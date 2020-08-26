@@ -13,8 +13,6 @@ environment.config();
 
 const redisOptions = require('../constant/redisConnection');
 
-const weeklyPayout = require('./WeeklyPayout');
-
 const weeklyCommissionQueue = new Queue('WeeklyCommission', redisOptions);
 setQueues([weeklyCommissionQueue]);
 
@@ -49,7 +47,18 @@ weeklyCommissionQueue.process( async (job, done) => {
             program: program._id,
             hash: program.hash
         });
-        weeklyPayout(user, program.plan, program.weeklyCommission);
+        // let message = '';
+        // message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
+        //             `<p>${program.weeklyCommission.toFixed(4)} BCH have been successfully added to your account from your ${program.plan.name} plan subscribed. </p><br>` +
+        //             '<br><h3><b>Thank You!</b></h3>'
+        // const msg = {
+        //     to: user.email,
+        //     from: process.env.SENDER_EMAIL,
+        //     subject: `Odeffe: Weekly Payout`,
+        //     text: message,
+        //     html: message
+        // };
+        // await sgMail.send(msg);
         if (runningPrograms === 0) {
             await UserModel.updateOne({_id: program.user._id}, {
                 status: 'Inactive'
@@ -74,6 +83,6 @@ weeklyCommissionQueue.process( async (job, done) => {
 
 module.exports = async () => {
     await weeklyCommissionQueue.add({}, {
-        repeat: {cron: '*/10 * * * *'}
+        repeat: {cron: '0 9 * * *'}
     });
 }

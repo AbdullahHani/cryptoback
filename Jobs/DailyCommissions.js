@@ -3,6 +3,7 @@ const setQueues = require('bull-board').setQueues;
 
 const ProgramModel = require('../App/Programs/model');
 const DPayoutsModel = require('../App/DPayouts/model');
+const UsersModel = require('../App/Users/model');
 
 const BlockchainExc = require('blockchain.info/exchange');
 
@@ -18,6 +19,7 @@ setQueues([dailyCommissionQueue]);
 
 dailyCommissionQueue.process( async (job, done) => {
     let commission = 0, commissionToAdd = 0;
+    let runningPrograms = null;
     const programs = await ProgramModel.find({
         programEnds: 'No'
     });
@@ -43,6 +45,15 @@ dailyCommissionQueue.process( async (job, done) => {
                         await ProgramModel.updateOne({ _id: program._id }, {
                             programEnds: 'Yes'
                         });
+                        runningPrograms = await ProgramModel.find({
+                            user: program.user._id,
+                            programEnds: 'No'
+                        });
+                        if (!runningPrograms) {
+                            await UsersModel.updateOne({_id: program.user._id}, {
+                                status: 'Inactive'
+                            });
+                        }
                     }
                 } else {
                     let value = (program.btc * 1.8) - tCommission - (program.weeklyCommission);
@@ -51,6 +62,15 @@ dailyCommissionQueue.process( async (job, done) => {
                     await ProgramModel.updateOne({ _id: program._id }, {
                         programEnds: 'Yes'
                     });
+                    runningPrograms = await ProgramModel.find({
+                        user: program.user._id,
+                        programEnds: 'No'
+                    });
+                    if (!runningPrograms) {
+                        await UsersModel.updateOne({_id: program.user._id}, {
+                            status: 'Inactive'
+                        });
+                    }
                 }
             }
             const days = program.days + 1;
@@ -71,6 +91,6 @@ dailyCommissionQueue.process( async (job, done) => {
 
 module.exports = async () => {
     await dailyCommissionQueue.add({}, {
-        repeat: {cron: '*/2 * * * *'}
+        repeat: {cron: '* * * * * *'}
     });
 }

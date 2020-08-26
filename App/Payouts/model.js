@@ -24,6 +24,12 @@ const PayoutSchema = new Schema({
     hash: {
         type: String,
         trim: true
+    },
+    status: {
+        type: String,
+        trim: true,
+        enum: ['Paid', 'Unpaid'],
+        default: 'Unpaid'
     }
 }, {
     timestamps: true

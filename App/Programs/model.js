@@ -90,7 +90,6 @@ programSchema.pre('save', async function (next) {
 var autoPopulateReplies = function (next) {
     this.populate('plan');
     this.populate('user');
-    this.populate('invoice');
     next();
 };
 

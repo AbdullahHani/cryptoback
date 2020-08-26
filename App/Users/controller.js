@@ -8,9 +8,6 @@ const AffiliationModel = require('../Affiliations/model');
 const ProgramModel = require('../Programs/model');
 const PayoutsModel = require('../Payouts/model');
 
-const changePasswordJob = require('../../Jobs/ChangePassword');
-const changeWalletJob = require('../../Jobs/WalletOTP');
-
 environment.config();
 
 const sgMail = require('@sendgrid/mail');
@@ -306,14 +303,26 @@ module.exports = {
             });
         }
         else {
-            const verificationCode = Math.random().toString(35).substring(2, 34) + Math.random().toString(35).substring(2, 34);
+            const verificationCode = Math.floor(100000 + Math.random() * 900000);
             await UsersModel.updateOne({email: email},{
-                changePasswordCode: verificationCode
+                changePasswordCode: verificationCode.toString()
             });
             const user = await UsersModel.findOne({email: email}, {password: 0});
-            changePasswordJob(user);
+            let message = '';
+            message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
+                        `<p>Welcome to Odeffe change password portal.</p><br>` +
+                        `<p>Your Code for changing password is </p><h3>${user.changePasswordCode}</h3><br>` +
+                        '<br><h3><b>Thank You!</b></h3>'
+            const msg = {
+                to: user.email,
+                from: process.env.SENDER_EMAIL,
+                subject: `Odeffe: Change Password`,
+                text: message,
+                html: message
+            };
+            await sgMail.send(msg);
             return res.status(200).json({
-                status: "Successfull",
+                status: "Successful",
                 message: "A verification Code has been sent to your email. Use the code to change Password."
             });
         }
@@ -395,15 +404,23 @@ module.exports = {
     try {
         const id = req.params.id;
         let user = await UsersModel.findOne({_id: id}, {password: 0});
-        const verificationCode = Math.random().toString(35).substring(2, 34) + 
-                                Math.random().toString(35).substring(2, 34) +
-                                Math.random().toString(35).substring(2, 34) +
-                                Math.random().toString(35).substring(2, 34)
+        const verificationCode = Math.random().toString(35).substring(2, 34);
         await UsersModel.updateOne({ _id: id }, {
             changeWalletCode: verificationCode
         });
         user = await UsersModel.findOne({_id: id}, {password: 0});
-        changeWalletJob(user);
+        let message = '';
+        message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
+                    `<p>Your verification code for changing Wallet ID is </p><h3>${user.changeWalletCode}</h3><br>` +
+                    '<br><h3><b>Thank You!</b></h3>'
+        const msg = {
+            to: user.email,
+            from: process.env.SENDER_EMAIL,
+            subject: `Odeffe: Wallet update verification code`,
+            text: message,
+            html: message
+        };
+        await sgMail.send(msg);
         return res.status(200).json({
             status: "Successfull",
             message: "A verification code for changing your wallet id has been sent to your email. Use the code for changing your wallet id."

@@ -19,8 +19,23 @@ const affiliationSchema = new Schema({
         type: Number,
         enum: [1, 3, 7]
     },
-    commission: {
-        type: Number
+    amount: {
+        type: Number,
+        default: 0
+    },
+    program: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Programs'
+    },
+    status: {
+        type: String,
+        trim: true,
+        enum: ['Paid', 'Unpaid'],
+        default: 'Unpaid'
+    },
+    bch: {
+        type: Number,
+        default: 0
     }
 }, {
     timestamps: true
@@ -28,7 +43,8 @@ const affiliationSchema = new Schema({
 
 var autoPopulateReplies = function (next) {
     this.populate('user');
-    this.populate('referralId')
+    this.populate('referralId');
+    this.populate('program');
     next();
 };
 

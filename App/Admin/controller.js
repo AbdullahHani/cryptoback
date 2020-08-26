@@ -4,7 +4,8 @@ const environment = require('dotenv');
 
 environment.config();
 
-const emailUs = require('../../Jobs/EmailUs');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 module.exports = {
   Create: async (req, res) => {
@@ -161,7 +162,15 @@ module.exports = {
   },
   EmailUs: async (req, res) => {
     try {
-        emailUs(req.body);
+        const data = req.body;
+        const msg = {
+            to: process.env.RECEIVER_EMAIL,
+            from: data.email,
+            subject: data.subject,
+            text: data.message,
+            html: data.message
+        };
+        await sgMail.send(msg);
         return res.status(200).json({
             status: "Email Sent",
             message: "Your email have been sent to our support. We will reply you within 24 hours"

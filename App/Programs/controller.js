@@ -88,24 +88,12 @@ module.exports = {
                   user: req.decoded._id
                 });
                 for (const affiliation of affiliations) {
-                  if (affiliation.referralId.status === "Active") {
-                    const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
-                    const user = await UserModel.findOne({ _id: affiliation.referralId._id },{ password: 0 });
-                    const balance = user.balance + commission;
-                    const affBonus = user.affiliationBonus + commission;
-                    await UserModel.updateOne({ _id: user._id }, {
-                      balance: balance,
-                      affiliationBonus: affBonus
-                    });
-                    await AffiliationReport.create({
-                      referralId: user._id,
-                      user: req.decoded._id,
-                      level: affiliation.level,
-                      percent: affiliation.commissionPercentage,
-                      amount: commission,
-                      program: program._id
-                    });
-                  }
+                  const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
+                  await AffiliationModel.updateOne({ _id: affiliation._id }, {
+                    amount: commission,
+                    program: program._id,
+                    bch: payedAmount - ( payedAmount * configuration[0].extra / 100 )
+                  });
                 }
                 return res.status(200).json({
                   status: "Successfull",
@@ -194,20 +182,10 @@ module.exports = {
         for (const affiliation of affiliations) {
           if (affiliation.referralId.status === 'Active') {
             const commission = ( amountInBCH) * (affiliation.commissionPercentage / 100);
-            const user = await UserModel.findOne({ _id: affiliation.referralId._id },{ password: 0 });
-            const balance = user.balance + commission;
-            const affBonus = user.affiliationBonus + commission;
-            await UserModel.updateOne({ _id: user._id }, {
-              balance: balance,
-              affiliationBonus: affBonus
-            });
-            await AffiliationReport.create({
-              referralId: user._id,
-              user: User._id,
-              level: affiliation.level,
-              percent: affiliation.commissionPercentage,
+            await AffiliationModel.updateOne({ _id: affiliation._id }, {
               amount: commission,
-              program: program._id
+              program: program._id,
+              bch: amountInBCH
             });
           }
         }
