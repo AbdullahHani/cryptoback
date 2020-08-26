@@ -88,12 +88,14 @@ module.exports = {
                   user: req.decoded._id
                 });
                 for (const affiliation of affiliations) {
-                  const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
-                  await AffiliationModel.updateOne({ _id: affiliation._id }, {
-                    amount: commission,
-                    program: program._id,
-                    bch: payedAmount - ( payedAmount * configuration[0].extra / 100 )
-                  });
+                  if (affiliation.referralId.status === 'Active') {
+                    const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
+                    await AffiliationModel.updateOne({ _id: affiliation._id }, {
+                      amount: commission,
+                      program: program._id,
+                      bch: payedAmount - ( payedAmount * configuration[0].extra / 100 )
+                    });
+                  }
                 }
                 return res.status(200).json({
                   status: "Successfull",
