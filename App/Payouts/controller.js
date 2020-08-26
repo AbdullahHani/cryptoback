@@ -11,7 +11,7 @@ module.exports = {
         if (!isAdmin) { 
           payouts = await PayoutModel.find({ user: id });  
         } else {
-          payouts = await PayoutModel.find({});
+          payouts = await PayoutModel.find({status: 'Paid'});
         }
         return res.status(200).json({
             status: "Successful",
