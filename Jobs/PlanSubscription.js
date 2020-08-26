@@ -16,11 +16,13 @@ setQueues([planSubscriptionEmailQueue]);
 planSubscriptionEmailQueue.process(async (job, done) => {
     const user = job.data.user;
     const plan = job.data.plan;
+    const investment = job.data.investment;
     let message = '';
+    message= '<img src="" style="height:60px;"/><br>' +
+                '<h2 style="font-weight: 700; text-decoration: underline; text-align:center>Congratulations on Package Activation</h2><br>';
     message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
-                '<p>You have successfully subscribed a plan on Odeffe.</p><br>' +
-                `<p>Plan: ${plan.name}.</p><br>Weekly Commission: ${plan.weeklyCommission}` +
-                '<br><h3><b>Thank You!</b></h3>'
+                `<p>Thank you for investing ${investment.toFixed(4)} with Odeffe, your ${plan.name} plan is activated. Please update the BCH wallet address to ensure on time auto credits to your account.</p><br>` +
+                '<br><p><b>Regards:</b></p><br><p>Odeffe</p><br>'
     const msg = {
         to: user.email,
         from: process.env.SENDER_EMAIL,
@@ -32,9 +34,10 @@ planSubscriptionEmailQueue.process(async (job, done) => {
     done();
 });
 
-module.exports = async (user, plan) => {
+module.exports = async (user, plan, amount) => {
     await planSubscriptionEmailQueue.add({
         user: user,
-        plan: plan
+        plan: plan,
+        investment: amount
     });
 }
