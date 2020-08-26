@@ -32,14 +32,14 @@ weeklyCommissionQueue.process( async (job, done) => {
             user: program.user._id,
             programEnds: 'No'
         }).count();
-        const user = await UserModel.findOne({_id: program.user._id});
-        const balance = user.balance + program.weeklyCommission;
-        const payoutAmount = user.totalPayouts + program.weeklyCommission;
-        await UserModel.updateOne({_id: program.user._id}, {
-            balance: balance,
-            totalPayouts: payoutAmount,
-            plan: program.plan._id
-        });
+        // const user = await UserModel.findOne({_id: program.user._id});
+        // const balance = user.balance + program.weeklyCommission;
+        // const payoutAmount = user.totalPayouts + program.weeklyCommission;
+        // await UserModel.updateOne({_id: program.user._id}, {
+        //     balance: balance,
+        //     totalPayouts: payoutAmount,
+        //     plan: program.plan._id
+        // });
         await PayoutModel.create({
             user: program.user._id,
             amount: program.weeklyCommission,
