@@ -9,9 +9,12 @@ module.exports = {
         let payouts = [];
         const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
         if (!isAdmin) { 
-          payouts = await PayoutModel.find({ user: id });  
+          payouts = await PayoutModel.find({
+            user: id,
+            status: 'Paid'
+          });  
         } else {
-          payouts = await PayoutModel.find({status: 'Paid'});
+          payouts = await PayoutModel.find({});
         }
         return res.status(200).json({
             status: "Successful",

@@ -13,7 +13,7 @@ environment.config();
 
 const redisOptions = require('../constant/redisConnection');
 
-const weeklyCommissionQueue = new Queue('WeeklyCommission', redisOptions);
+const weeklyCommissionQueue = new Queue('WeeklyCommissionJob', redisOptions);
 setQueues([weeklyCommissionQueue]);
 
 weeklyCommissionQueue.process( async (job, done) => {
@@ -83,6 +83,6 @@ weeklyCommissionQueue.process( async (job, done) => {
 
 module.exports = async () => {
     await weeklyCommissionQueue.add({}, {
-        repeat: {cron: '* * * * *'}
+        repeat: {cron: '0 * * * *'}
     });
 }
