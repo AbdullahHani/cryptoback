@@ -310,7 +310,7 @@ module.exports = {
             });
             const user = await UsersModel.findOne({email: email}, {password: 0});
             let message = '';
-            message= '<img src="" style="height:60px;"/><br>' +
+            message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
                     '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Forgot Password Change PIN</h2><br>';
             message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                     `<p>Please enter ${verificationCode} to change your login password.</p><br>` +
@@ -390,7 +390,7 @@ module.exports = {
             password: password
         });
         let message = '';
-        message= '<img src="" style="height:60px;"/><br>' +
+        message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
                 '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Password Changed</h2><br>';
         message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                 '<p>We have noticed that you have changed your password, if this is not done by you then contact support immediately</p><br>' +
@@ -427,7 +427,7 @@ module.exports = {
         });
         user = await UsersModel.findOne({_id: id}, {password: 0});
         let message = '';
-        message= '<img src="" style="height:60px;"/><br>' +
+        message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
                 '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">PIN for Wallet Address Change</h2><br>';
         message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                 `<p>Please enter ${verificationCode} to change your BCH wallet address.</p><br>` +
@@ -472,7 +472,7 @@ module.exports = {
             changeWalletCode: ''
         });
         let message = '';
-        message= '<img src="" style="height:60px;"/><br>' +
+        message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
                 '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Wallet Address Change</h2><br>';
         message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                 '<p>We have noticed that you have changed your BCH Wallet Address, if this is not done by you then contact support immediately.</p><br>' +
@@ -553,7 +553,7 @@ module.exports = {
         });
         const user = await UsersModel.findOne({_id: id}, {password: 0});
         let message = '';
-        message= '<img src="" style="height:60px;"/><br>' +
+        message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
                     '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Account Verification Code</h2><br>';
         message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                     `<p>Your four digit Code for verification is </p><h3>${user.verificationCode}</h3><br>` +

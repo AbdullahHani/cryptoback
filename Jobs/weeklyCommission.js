@@ -66,8 +66,10 @@ weeklyCommissionQueue.process( async (job, done) => {
         }
         table += `<tr><td style="border: 1px solid black;">${program.user.userName}</td><td style="border: 1px solid black;">${program.user.email}</td><td style="border: 1px solid black;">${program.weeklyCommission}</td><td style="border: 1px solid black;">${program.user.walletId}</td></tr>`;
     }
-    table += '</table><br>';      
-    let emailMessage = `<strong>Hello Admin!</strong><br><p>The weekly payout list is ready. You have to pay this amount in BCH to the following users on their address.</p><br>`;
+    table += '</table><br>';
+    let emailMessage = '';
+    emailMessage = '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>'
+    emailMessage = `<strong>Hello Admin!</strong><br><p>The weekly payout list is ready. You have to pay this amount in BCH to the following users on their address.</p><br>`;
     emailMessage += `<h3>User/Payout List</h3><br>` + table + `<br><h3>Thank You!</h3>`;
 
     const msg = {
