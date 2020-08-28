@@ -245,6 +245,11 @@ module.exports = {
               status: 'Inactive'
             });
           }
+
+          return res.status(200).json({
+            status: "Successful",
+            message: "Program Deactivated"
+          });
         } else {
           await ProgramModel.updateOne({ _id: id }, {
             payWeek: 'Yes',
@@ -256,6 +261,10 @@ module.exports = {
               status: 'Active'
             });
           }
+          return res.status(200).json({
+            status: "Successful",
+            message: "Program Activated"
+          });
         }
       } else {
         return res.status(403).json({
