@@ -28,7 +28,7 @@ module.exports = {
     List: async ( req, res ) => {
       try {
         const id = req.decoded._id;
-        const type = req.query.type;
+        let type = req.query.type;
         let affiliations = [];
         const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
         if (!isAdmin) {
