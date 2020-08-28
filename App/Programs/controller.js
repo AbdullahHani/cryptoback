@@ -104,7 +104,7 @@ module.exports = {
                       level: affiliation.level,
                       percent: affiliation.commissionPercentage,
                       program: program._id
-                    })
+                    });
                   }
                 }
                 return res.status(200).json({
@@ -194,10 +194,20 @@ module.exports = {
         for (const affiliation of affiliations) {
           if (affiliation.referralId.status === 'Active') {
             const commission = ( amountInBCH) * (affiliation.commissionPercentage / 100);
+            const addCommission = commission + affiliation.amount;
+            const addBCH = amountInBCH + affiliation.bch;
             await AffiliationModel.updateOne({ _id: affiliation._id }, {
+              amount: addCommission,
+              bch: addBCH
+            });
+            await AffiliationReport.create({
               amount: commission,
-              program: program._id,
-              bch: amountInBCH
+              user: affiliation.user._id,
+              referralId: affiliation.referralId._id,
+              bch: amountInBCH,
+              level: affiliation.level,
+              percent: affiliation.commissionPercentage,
+              program: program._id
             });
           }
         }
