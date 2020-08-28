@@ -66,16 +66,16 @@ module.exports = {
     },
     BulkUpdate: async (req, res) =>{
       try {
-        const { payouts } = req.body;
-        for (const payout of payouts) {
+        const { affiliations } = req.body;
+        for (const affiliation of affiliations) {
           if (status === 'Paid') {
-            await PayoutModel.updateOne({_id: payout._id}, {
+            await AffiliationModel.updateOne({_id: affiliation._id}, {
               status: 'Paid'
             });
-            const payoutNew = await PayoutModel.findOne({_id: payout._id});
-            const user = await UsersModel.findOne({userName: payout.userName});
-            const balance = user.balance + payoutNew.amount;
-            const totalPayouts = user.totalPayouts + payoutNew.amount;
+            const affiliationNew = await AffiliationModel.findOne({_id: affiliation._id});
+            const user = await UsersModel.findOne({userName: affiliation.userName});
+            const balance = user.balance + affiliationNew.amount;
+            const totalPayouts = user.totalPayouts + affiliationNew.amount;
             await UsersModel.updateOne({_id: user._id}, {
               balance: balance,
               totalPayouts: totalPayouts

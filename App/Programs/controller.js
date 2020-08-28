@@ -217,5 +217,34 @@ module.exports = {
         message: error.message
       });
     }
+  },
+  updateActivation: async ( req, res ) => {
+    try {
+      const id = req.params.id;
+      const program = await ProgramModel.findOne({_id: id});
+      if (program) {
+        if (program.programEnds === 'Yes') {
+          await ProgramModel.updateOne({ _id: id }, {
+            payWeek: 'No',
+            programEnds: 'No'
+          });
+        } else {
+          await ProgramModel.updateOne({ _id: id }, {
+            payWeek: 'Yes',
+            programEnds: 'Yes'
+          });
+        }
+      } else {
+        return res.status(403).json({
+          status: "Failed",
+          message: "No such Program"
+        });
+      }
+    } catch (error) {
+      return res.status(500).json({
+        status: "Successful",
+        message: error.message
+      });
+    }
   }
 }
