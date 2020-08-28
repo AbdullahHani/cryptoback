@@ -27,14 +27,30 @@ module.exports = {
     List: async ( req, res ) => {
       try {
         const id = req.decoded._id;
+        const type = req.query.type;
         let affiliations = [];
         const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
         if (!isAdmin) {
-          affiliations = await AffiliationModel.find({
-            referralId: id
-          });   
+          if ( type === 'All' ) {
+            affiliations = await AffiliationModel.find({
+              referralId: id
+            });   
+          } else {
+            type = parseInt(type);
+            affiliations = await AffiliationModel.find({
+              referralId: id,
+              level: type
+            });
+          }
         } else {
-          affiliations = await AffiliationModel.find({});
+          if ( type === 'All' ) {
+            affiliations = await AffiliationModel.find({});   
+          } else {
+            type = parseInt(type);
+            affiliations = await AffiliationModel.find({
+              level: type
+            });
+          }
         }
         return res.status(200).json({
             status: "Successfull",

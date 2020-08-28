@@ -20,13 +20,19 @@ const AffiliationReportsSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Users'
     },
-    btc: {
+    bch: {
         type: Number,
         default: 0
     },
     program: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Programs'
+    },
+    status: {
+        type: String,
+        trim: true,
+        enum: ['Paid', 'Unpaid'],
+        default: 'Unpaid'
     }
 }, {
     timestamps: true

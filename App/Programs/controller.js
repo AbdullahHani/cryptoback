@@ -90,11 +90,21 @@ module.exports = {
                 for (const affiliation of affiliations) {
                   if (affiliation.referralId.status === 'Active') {
                     const commission = ( payedAmount - ( payedAmount * configuration[0].extra / 100 )) * (affiliation.commissionPercentage / 100);
+                    const addCommission = commission + affiliation.amount;
+                    const addBCH = (payedAmount - ( payedAmount * configuration[0].extra / 100 )) + affiliation.bch;
                     await AffiliationModel.updateOne({ _id: affiliation._id }, {
-                      amount: commission,
-                      program: program._id,
-                      bch: payedAmount - ( payedAmount * configuration[0].extra / 100 )
+                      amount: addCommission,
+                      bch: addBCH
                     });
+                    await AffiliationReport.create({
+                      amount: commission,
+                      user: affiliation.user._id,
+                      referralId: affiliation.referralId._id,
+                      bch: payedAmount - ( payedAmount * configuration[0].extra / 100 ),
+                      level: affiliation.level,
+                      percent: affiliation.commissionPercentage,
+                      program: program._id
+                    })
                   }
                 }
                 return res.status(200).json({
