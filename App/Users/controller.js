@@ -127,6 +127,12 @@ module.exports = {
             });
         }
         else {
+            if (user.block === 'Yes') {
+                return res.status(404).json({
+                    status: "Failed",
+                    message: "You are not authorized to login"
+                });
+            }
             let isMatch = await user.comparePassword(password);
             if ( !isMatch ) {
                 return res.status(409).json({
@@ -575,6 +581,34 @@ module.exports = {
             status: "Error",
             message: error.message
         });
+    }
+  },
+  blockUser: async (req, res) => {
+    try {
+        const id = req.params.id;
+        const user = await UsersModel.findOne({_id: id});
+        if (user.block === 'Yes') {
+            await UsersModel.updateOne({_id: id}, {
+                block: "No"
+            });
+            return res.status(200).json({
+                status: "Successful",
+                message: "Successfully Unblocked User"
+            });
+        } else {
+            await UsersModel.updateOne({_id: id}, {
+                block: "Yes"
+            });
+            return res.status(200).json({
+                status: "Successful",
+                message: "Successfully Blocked User"
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            status: "Error",
+            message: error.message
+        })
     }
   }
 }

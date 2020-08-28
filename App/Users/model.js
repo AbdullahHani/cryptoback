@@ -98,6 +98,12 @@ const UserSchema = new Schema({
         trim: true,
         enum: ['Yes', 'No'],
         default: 'No'
+    },
+    block: {
+        type: String,
+        trim: true,
+        enum: ['Yes', 'No'],
+        default: 'No'
     }
 },{timestamps: true});
 

@@ -18,5 +18,6 @@ router.get('/:id', middleware.authenticateToken, Controller.View);
 router.patch('/wallet/:id', middleware.authenticateToken, Controller.walletOTP);
 router.patch('/updatepassword/:id', middleware.authenticateToken, Controller.updatePassword);
 router.patch('/wallet/update/:id', middleware.authenticateToken, Controller.updateWallet);
+router.patch('/block/:id', middleware.authenticateToken, Controller.blockUser);
 
 module.exports = router;
