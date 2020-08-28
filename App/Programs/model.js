@@ -61,7 +61,13 @@ const programSchema = new Schema({
     hash: {
         type: String,
         trim: true
-    }
+    },
+    active: {
+        type: String,
+        trim: true,
+        enum: ['Yes', 'No'],
+        default: 'Yes'
+    },
 }, {
     timestamps: true
 });

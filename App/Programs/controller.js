@@ -233,10 +233,11 @@ module.exports = {
       const id = req.params.id;
       const program = await ProgramModel.findOne({_id: id});
       if (program) {
-        if (program.programEnds === 'Yes') {
+        if (program.active === 'Yes') {
           await ProgramModel.updateOne({ _id: id }, {
             payWeek: 'No',
-            programEnds: 'No'
+            programEnds: 'No',
+            active: 'No'
           });
           const runningPrograms = await ProgramModel.find({user: program.user._id});
           if (!runningPrograms) {
@@ -247,7 +248,8 @@ module.exports = {
         } else {
           await ProgramModel.updateOne({ _id: id }, {
             payWeek: 'Yes',
-            programEnds: 'Yes'
+            programEnds: 'Yes',
+            active: 'Yes'
           });
           if (program.user.status === 'Inactive') {
             await UserModel.updateOne({_id: program.user._id}, {
