@@ -14,7 +14,7 @@ environment.config();
 
 const redisOptions = require('../constant/redisConnection');
 
-const dailyCommissionQueue = new Queue('DailyCommission', redisOptions);
+const dailyCommissionQueue = new Queue('DailyCommissionJob', redisOptions);
 setQueues([dailyCommissionQueue]);
 
 dailyCommissionQueue.process( async (job, done) => {
