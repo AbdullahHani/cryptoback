@@ -7,15 +7,20 @@ module.exports = {
   List: async (req, res) => {
     try {
         const id = req.decoded._id;
+        const status = req.query.status;
         let payouts = [];
         const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
-        if (!isAdmin) { 
+        if (!isAdmin) {
           payouts = await PayoutModel.find({
             user: id,
             status: 'Paid'
-          });  
+          }).sort({_id: -1});  
         } else {
-          payouts = await PayoutModel.find({});
+          if (!type) {
+            payouts = await PayoutModel.find({}).sort({_id: -1});
+          } else {
+            payouts = await PayoutModel.find({ status: status }).sort({_id: -1});
+          }
         }
         return res.status(200).json({
             status: "Successful",
@@ -119,7 +124,8 @@ module.exports = {
       for (const payout of payouts) {
         if (status === 'Paid') {
           await PayoutModel.updateOne({_id: payout._id}, {
-            status: 'Paid'
+            status: 'Paid',
+            txid: payout.txid
           });
           const payoutNew = await PayoutModel.findOne({_id: payout._id});
           const user = await UsersModel.findOne({userName: payout.userName});

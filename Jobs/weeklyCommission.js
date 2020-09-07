@@ -70,7 +70,14 @@ weeklyCommissionQueue.process( async (job, done) => {
     let emailMessage = '';
     emailMessage = '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>'
     emailMessage = `<strong>Hello Admin!</strong><br><p>The weekly payout list is ready. You have to pay this amount in BCH to the following users on their address.</p><br>`;
-    emailMessage += `<h3>User/Payout List</h3><br>` + table + `<br><h3>Thank You!</h3>`;
+    emailMessage += `<h3>User/Payout List</h3><br>` + table + `<br><p>Regards!</p><p>Odeffe</p>`;
+    emailMessage += '<div style="display: flex; justify-content: flex-start;">' + 
+                '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                '</div>';
 
     const msg = {
         from: process.env.RECEIVER_EMAIL,

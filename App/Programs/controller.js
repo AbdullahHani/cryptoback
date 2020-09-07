@@ -16,10 +16,10 @@ module.exports = {
       let programs = [];
       const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
       if (!isAdmin) {
-        programs = await ProgramModel.find({user: id});
+        programs = await ProgramModel.find({user: id}).sort({_id: -1});
       }
       else {
-        programs = await ProgramModel.find({});
+        programs = await ProgramModel.find({}).sort({_id: -1});
       }
       return res.status(200).json({
           status: "Successfull",
@@ -236,10 +236,13 @@ module.exports = {
         if (program.active === 'Yes') {
           await ProgramModel.updateOne({ _id: id }, {
             payWeek: 'No',
-            programEnds: 'No',
+            programEnds: 'Yes',
             active: 'No'
           });
-          const runningPrograms = await ProgramModel.find({user: program.user._id});
+          const runningPrograms = await ProgramModel.find({
+            user: program.user._id,
+            programEnds: 'No'
+          });
           if (!runningPrograms) {
             await UserModel.updateOne({_id: program.user._id}, {
               status: 'Inactive'
@@ -253,7 +256,7 @@ module.exports = {
         } else {
           await ProgramModel.updateOne({ _id: id }, {
             payWeek: 'Yes',
-            programEnds: 'Yes',
+            programEnds: 'No',
             active: 'Yes'
           });
           if (program.user.status === 'Inactive') {

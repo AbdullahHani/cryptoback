@@ -33,6 +33,10 @@ const AffiliationReportsSchema = new Schema({
         trim: true,
         enum: ['Paid', 'Unpaid'],
         default: 'Unpaid'
+    },
+    txid: {
+        type: String,
+        trim: true
     }
 }, {
     timestamps: true

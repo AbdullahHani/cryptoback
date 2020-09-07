@@ -5,6 +5,7 @@ const environment = require('dotenv');
 const moment = require('moment');
 
 const AffiliationModel = require('../Affiliations/model');
+const AffiliationReports = require('../AffiliationReport/model');
 const ProgramModel = require('../Programs/model');
 const PayoutsModel = require('../Payouts/model');
 
@@ -73,6 +74,27 @@ module.exports = {
                     level: 1,
                     commissionPercentage: 7
                 });
+                // let message = '';
+                // message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
+                //             '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Welcome to Odeffe</h2><br>';
+                // message += `<h3><b>Dear ${userOne.name}!</b></h3><br>` +
+                //             '<p>.</p>' +
+                //             '<br><p><b>Regards:</b></p><br><p>Odeffe</p>';
+                // message += '<div style="display: flex; justify-content: flex-start;">' + 
+                //             '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                //             '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                //             '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                //             '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                //             '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                //             '</div>';
+                // const msg = {
+                //     to: user.email,
+                //     from: process.env.SENDER_EMAIL,
+                //     subject: `Odeffe: Welcome`,
+                //     text: message,
+                //     html: message
+                // };
+                // await sgMail.send(msg);
                 const userTwo = await UsersModel.findOne({levelOne: userOne.id}, {password: 0});
                 if (userTwo) {
                     await UsersModel.updateOne({ _id: userTwo.id }, {
@@ -218,7 +240,7 @@ module.exports = {
   },
   List: async ( req, res ) => {
     try {
-        const users = await UsersModel.find({}, {password: 0});
+        const users = await UsersModel.find({}, {password: 0}).sort({_id: -1});
         if ( users.length === 0 ) {
             return res.status(403).json({
                 status: "Failed",
@@ -321,6 +343,13 @@ module.exports = {
             message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                     `<p>Please enter ${verificationCode} to change your login password.</p><br>` +
                     '<br><p><b>Regards:</b></p><br><p>Odeffe</p><br>';
+            message += '<div style="display: flex; justify-content: flex-start;">' + 
+                    '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                    '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                    '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                    '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                    '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                    '</div>';
             const msg = {
                 to: user.email,
                 from: process.env.SENDER_EMAIL,
@@ -402,6 +431,13 @@ module.exports = {
                 '<p>We have noticed that you have changed your password, if this is not done by you then contact support immediately</p><br>' +
                 '<p>Email: Support@Odeffe.com</p><br>' +
                 '<br><p><b>Regards:</b></p><br><p>Odeffe</p><br>';
+        message += '<div style="display: flex; justify-content: flex-start;">' + 
+                '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                '</div>';
         const msg = {
             to: user.email,
             from: process.env.SENDER_EMAIL,
@@ -438,6 +474,13 @@ module.exports = {
         message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                 `<p>Please enter ${verificationCode} to change your BCH wallet address.</p><br>` +
                 '<br><p><b>Regards:</b></p><br><p>Odeffe</p><br>';
+        message += '<div style="display: flex; justify-content: flex-start;">' + 
+                '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                '</div>';
         const msg = {
             to: user.email,
             from: process.env.SENDER_EMAIL,
@@ -484,6 +527,13 @@ module.exports = {
                 '<p>We have noticed that you have changed your BCH Wallet Address, if this is not done by you then contact support immediately.</p><br>' +
                 '<p>Email: Support@Odeffe.com</p><br>' +
                 '<br><p><b>Regards:</b></p><br><p>Odeffe</p><br>';
+        message += '<div style="display: flex; justify-content: flex-start;">' + 
+                '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                '</div>';
         const msg = {
             to: user.email,
             from: process.env.SENDER_EMAIL,
@@ -507,7 +557,7 @@ module.exports = {
   },
   AdminDashboard: async (req, res) => {
     try {
-        let totalDeposits = 0, totalPayouts = 0;
+        let totalDeposits = 0, totalPayouts = 0, totalDepositsBCH = 0, totalPendingPayouts = 0; 
 
         const totalUsers = await UsersModel.find({}, {password: 0});
         const activeUsers = await UsersModel.find({status: 'Active'}, {password: 0});
@@ -515,10 +565,23 @@ module.exports = {
         const programs = await ProgramModel.find({});
         for (const program of programs) {
             totalDeposits += program.investment;
+            totalDepositsBCH += program.btc;
         }
-        const payouts = await PayoutsModel.find({});
-        for (const payout of payouts) {
+        const paidPayouts = await PayoutsModel.find({status: 'Paid'});
+        for (const payout of paidPayouts) {
             totalPayouts += payout.amount
+        }
+        const paidAffiliations = await AffiliationReports.find({status: 'Paid'});
+        for (const affiliation of paidAffiliations) {
+            totalPayouts += affiliation.amount
+        }
+        const unpaidPayouts = await PayoutsModel.find({status: 'Unpaid'});
+        for (const payout of unpaidPayouts) {
+            totalPendingPayouts += payout.amount
+        }
+        const unpaidAffiliations = await AffiliationReports.find({status: 'Unpaid'});
+        for (const affiliation of unpaidAffiliations) {
+            totalPendingPayouts += affiliation.amount
         }
         const sunday = moment().day("Sunday");
         const weekUsers = await UsersModel.find({
@@ -531,6 +594,35 @@ module.exports = {
                 $gt: sunday
             }
         });
+        let weekInvestment = 0;
+        for (const program of weekPrograms) {
+            weekInvestment += program.btc;
+        }
+        const programUsers = await ProgramModel.find({
+            createdAt: {
+                $gt: sunday
+            }
+        }).distinct('user');
+        const PayoutUsers = [];
+        let weekPayoutUsers = 0;
+        for (const payout of unpaidPayouts) {
+            if (weekPayoutUsers === 0) {
+                weekPayoutUsers += 1
+                PayoutUsers.push(payout.user._id)
+            } else if (PayoutUsers.indexOf(payout.user._id) !== -1) {
+                weekPayoutUsers += 1
+                PayoutUsers.push(payout.user._id)
+            }
+        }
+        for (const affiliation of unpaidAffiliations) {
+            if (weekPayoutUsers === 0) {
+                weekPayoutUsers += 1
+                PayoutUsers.push(affiliation.referralId._id)
+            } else if (PayoutUsers.indexOf(affiliation.referralId._id) !== -1) {
+                weekPayoutUsers += 1
+                PayoutUsers.push(affiliation.referralId._id)
+            }
+        }
         return res.status(200).json({
             status: "Successful",
             data: {
@@ -538,9 +630,14 @@ module.exports = {
                 activeUsers: activeUsers.length,
                 inActiveUsers: inActiveUsers.length,
                 totalDeposits: totalDeposits,
+                totalDepositsBCH: totalDepositsBCH,
                 totalPayouts: totalPayouts,
                 weekUsers: weekUsers.length,
-                weekPrograms: weekPrograms.length
+                weekPrograms: weekPrograms.length,
+                programUsers: programUsers.length,
+                totalPendingPayouts: totalPendingPayouts,
+                weekPayoutUsers: weekPayoutUsers,
+                weekInvestment: weekInvestment
             }
         });
     } catch (error) {
@@ -563,7 +660,14 @@ module.exports = {
                     '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Account Verification Code</h2><br>';
         message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
                     `<p>Your four digit Code for verification is </p><h3>${user.verificationCode}</h3><br>` +
-                    '<br><p><b>Regards:</b></p><br><p>Odeffe</p><br>'
+                    '<br><p><b>Regards:</b></p><br><p>Odeffe</p><br>';
+        message += '<div style="display: flex; justify-content: flex-start;">' + 
+                    '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                    '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                    '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                    '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                    '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                    '</div>';
         const msg = {
             to: user.email,
             from: process.env.SENDER_EMAIL,
@@ -591,6 +695,13 @@ module.exports = {
             await UsersModel.updateOne({_id: id}, {
                 block: "No"
             });
+            await ProgramModel.updateMany({
+                user: id
+            }, {
+                programEnds: 'No',
+                payWeek: 'Yes',
+                active: 'Yes'
+            });
             return res.status(200).json({
                 status: "Successful",
                 message: "Successfully Unblocked User"
@@ -598,6 +709,13 @@ module.exports = {
         } else {
             await UsersModel.updateOne({_id: id}, {
                 block: "Yes"
+            });
+            await ProgramModel.updateMany({
+                user: id
+            }, {
+                programEnds: 'Yes',
+                payWeek: 'No',
+                active: 'No'
             });
             return res.status(200).json({
                 status: "Successful",

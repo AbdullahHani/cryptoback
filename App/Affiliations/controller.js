@@ -28,28 +28,42 @@ module.exports = {
       try {
         const id = req.decoded._id;
         let type = req.query.type;
+        const status = req.query.status;
         let affiliations = [];
         const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
         if (!isAdmin) {
           if ( type === 'All' ) {
             affiliations = await AffiliationModel.find({
               referralId: id
-            });   
+            }).sort({_id: -1});   
           } else {
             type = parseInt(type);
             affiliations = await AffiliationModel.find({
               referralId: id,
               level: type
-            });
+            }).sort({_id: -1});
           }
         } else {
           if ( type === 'All' ) {
-            affiliations = await AffiliationModel.find({});   
+            if (!status) {
+              affiliations = await AffiliationModel.find({}).sort({_id: -1});   
+            } else {
+              affiliations = await AffiliationModel.find({
+                status: status
+              }).sort({_id: -1});
+            }
           } else {
             type = parseInt(type);
-            affiliations = await AffiliationModel.find({
-              level: type
-            });
+            if (!status) {
+              affiliations = await AffiliationModel.find({
+                level: type
+              }).sort({_id: -1});
+            } else {
+              affiliations = await AffiliationModel.find({
+                level: type,
+                status: status
+              }).sort({_id: -1});
+            }
           }
         }
         return res.status(200).json({

@@ -29,28 +29,45 @@ module.exports = {
       try {
         const id = req.decoded._id;
         let type = req.query.type;
+        let status = req.query.status;
+        if (status === 'undefined') {
+          status = ''
+        }
         let affiliations = [];
         const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
         if (!isAdmin) {
           if ( type === 'All' ) {
             affiliations = await AffiliationModel.find({
               referralId: id
-            });   
+            }).sort({_id: -1});   
           } else {
             type = parseInt(type);
             affiliations = await AffiliationModel.find({
               referralId: id,
               level: type
-            });
+            }).sort({_id: -1});
           }
         } else {
           if ( type === 'All' ) {
-            affiliations = await AffiliationModel.find({});   
+            if (!status) {
+              affiliations = await AffiliationModel.find({}).sort({_id: -1});   
+            } else {
+              affiliations = await AffiliationModel.find({
+                status: status
+              }).sort({_id: -1});
+            }
           } else {
             type = parseInt(type);
-            affiliations = await AffiliationModel.find({
-              level: type
-            });
+            if (!status) {
+              affiliations = await AffiliationModel.find({
+                level: type
+              }).sort({_id: -1});
+            } else {
+              affiliations = await AffiliationModel.find({
+                level: type,
+                status: status
+              }).sort({_id: -1});
+            }
           }
         }
         return res.status(200).json({
@@ -68,12 +85,13 @@ module.exports = {
       try {
         const { affiliations } = req.body;
         for (const affiliation of affiliations) {
-          if (status === 'Paid') {
+          if (affiliation.status === 'Paid') {
             await AffiliationModel.updateOne({_id: affiliation._id}, {
-              status: 'Paid'
+              status: 'Paid',
+              txid: affiliation.txid
             });
             const affiliationNew = await AffiliationModel.findOne({_id: affiliation._id});
-            const user = await UsersModel.findOne({userName: affiliation.userName});
+            const user = await UsersModel.findOne({userName: affiliation.user});
             const balance = user.balance + affiliationNew.amount;
             const totalPayouts = user.totalPayouts + affiliationNew.amount;
             await UsersModel.updateOne({_id: user._id}, {
