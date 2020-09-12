@@ -604,23 +604,25 @@ module.exports = {
             }
         }).distinct('user');
         const PayoutUsers = [];
-        let weekPayoutUsers = 0;
         for (const payout of unpaidPayouts) {
-            if (weekPayoutUsers === 0) {
-                weekPayoutUsers += 1
+            const check = PayoutUsers
+            if (PayoutUsers.length === 0) {
                 PayoutUsers.push(payout.user._id)
-            } else if (PayoutUsers.indexOf(payout.user._id) !== -1) {
-                weekPayoutUsers += 1
-                PayoutUsers.push(payout.user._id)
+            } else {
+                const check = PayoutUsers.indexOf(payout.user._id);
+                if (check === -1) {
+                    PayoutUsers.push(payout.user._id);
+                }
             }
         }
         for (const affiliation of unpaidAffiliations) {
-            if (weekPayoutUsers === 0) {
-                weekPayoutUsers += 1
+            if (PayoutUsers.length === 0) {
                 PayoutUsers.push(affiliation.referralId._id)
-            } else if (PayoutUsers.indexOf(affiliation.referralId._id) !== -1) {
-                weekPayoutUsers += 1
-                PayoutUsers.push(affiliation.referralId._id)
+            } else {
+                const check = PayoutUsers.indexOf(affiliation.referralId._id);
+                if (check === -1) {
+                    PayoutUsers.push(affiliation.referralId._id);
+                }
             }
         }
         return res.status(200).json({
@@ -636,7 +638,7 @@ module.exports = {
                 weekPrograms: weekPrograms.length,
                 programUsers: programUsers.length,
                 totalPendingPayouts: totalPendingPayouts,
-                weekPayoutUsers: weekPayoutUsers,
+                weekPayoutUsers: PayoutUsers.length,
                 weekInvestment: weekInvestment
             }
         });
