@@ -7,7 +7,7 @@ module.exports = {
   List: async (req, res) => {
     try {
         const id = req.decoded._id;
-        const status = req.query.status;
+        const status = req.query.status === 'undefined' ? '' : req.query.status;
         let payouts = [];
         const isAdmin = await AdminModel.findOne({ _id: id }, { password: 0 });
         if (!isAdmin) {
@@ -16,7 +16,7 @@ module.exports = {
             status: 'Paid'
           }).sort({_id: -1});  
         } else {
-          if (!type) {
+          if (!status) {
             payouts = await PayoutModel.find({}).sort({_id: -1});
           } else {
             payouts = await PayoutModel.find({ status: status }).sort({_id: -1});
