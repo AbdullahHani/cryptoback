@@ -18,8 +18,8 @@ const PayoutSchema = new Schema({
         type: Number
     },
     program: {
-        type: String,
-        trim: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Programs'
     },
     hash: {
         type: String,
@@ -42,6 +42,7 @@ const PayoutSchema = new Schema({
 var autoPopulateReplies = function (next) {
     this.populate('plan');
     this.populate('user');
+    this.populate('program');
     next();
 };
 
