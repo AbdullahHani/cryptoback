@@ -171,7 +171,7 @@ module.exports = {
           message: "Program already started against this hash"
         });
       }
-      const User = await UserModel.findOne({userName: userName}, { password: 0 });
+      const User = await UserModel.findOne({userName: userName.toLowerCase()}, { password: 0 });
       if (!User) {
         return res.status(403).json({
           status: "Failed",

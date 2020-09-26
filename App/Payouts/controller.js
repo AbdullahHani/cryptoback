@@ -3,6 +3,12 @@ const AdminModel = require('../Admin/model');
 const ProgramModel = require('../Programs/model');
 const UsersModel = require('../Users/model');
 
+const environment = require('dotenv');
+environment.config();
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 module.exports = {
   List: async (req, res) => {
     try {
@@ -122,24 +128,159 @@ module.exports = {
     try {
       const { payouts } = req.body;
       for (const payout of payouts) {
-        if (status === 'Paid') {
+        const payoutData = await PayoutModel.findOne({_id: payout._id});
+        if (payout.status === 'Paid' && payoutData.status === 'Unpaid') {
           await PayoutModel.updateOne({_id: payout._id}, {
             status: 'Paid',
             txid: payout.txid
           });
           const payoutNew = await PayoutModel.findOne({_id: payout._id});
-          const user = await UsersModel.findOne({userName: payout.userName});
+          const user = await UsersModel.findOne({userName: payout.user});
           const balance = user.balance + payoutNew.amount;
           const totalPayouts = user.totalPayouts + payoutNew.amount;
           await UsersModel.updateOne({_id: user._id}, {
             balance: balance,
             totalPayouts: totalPayouts
           });
+          let message = '';
+          message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
+                      '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Weekly Payout Transferred</h2><br>';
+          message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
+                      `<p>We transferred ${payoutNew.amount.toFixed(4)} BTC to your wallet. The transaction hash of the transferred amount is: ${payout.txid}. </p>` +
+                      '<br><p><b>Regards:</b></p><br><p>Odeffe</p>';
+          message += '<div style="display: flex; justify-content: flex-start;">' + 
+                      '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
+                      '<a href="https://www.facebook.com/OdeffeOfficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/iip65qfr.png" height="50"/></a>' +
+                      '<a href="https://www.instagram.com/odeffeofficial/" target="_blank"><img src="https://s12.directupload.net/images/200827/edl3bq6h.png" height="50"/></a>' +
+                      '<a href="https://t.me/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/vf2frr6w.png" height="50"/></a>' +
+                      '<a href="https://www.youtube.com/channel/UCYToRqJmUI_NnNtMWzWjJHQ?view_as=subscriber" target="_blank"><img src="https://s12.directupload.net/images/200827/h2mwptv7.png" height="50"/></a>' +
+                      '</div>';
+          const msg = {
+              to: user.email,
+              from: process.env.SENDER_EMAIL,
+              subject: `Odeffe: Weekly Payout`,
+              text: message,
+              html: message
+          };
+          await sgMail.send(msg);
         }
       }
       return res.status(200).json({
         status: "Successful",
         message: "Successfully Updated Payout Status"
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "Error",
+        message: error.message
+      });
+    }
+  },
+  chartData: async (req, res) => {
+    try {
+      const id = req.decoded._id;
+      const chartData = {
+        chart: {
+          caption: "",
+          subcaption: "Program Progress",
+          numbersuffix: "BTC",
+          theme: "fusion"
+        },
+        colorrange: {
+          color: [
+            {
+              minvalue: "0",
+              maxvalue: "50",
+              code: "#F2726F"
+            },
+            {
+              minvalue: "50",
+              maxvalue: "75",
+              code: "#FFC533"
+            },
+            {
+              minvalue: "75",
+              maxvalue: "100",
+              code: "#62B58F"
+            }
+          ]
+        },
+        value: "",
+        target: ""
+      };
+      const charts = [];
+      const programs = await ProgramModel.find({
+        user: id,
+        programEnds: 'No'
+      });
+      for (const program of programs) {
+        chartData.chart.caption = program.plan.name;
+        chartData.value = (program.totalCommission.toFixed(4)).toString();
+        chartData.target = (program.btc * 1.8).toString()
+        charts.push(chartData);
+      }
+      return res.status(200).json({
+        status: "Successful",
+        data: charts
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "Successful",
+        message: error.message
+      });
+    }
+  },
+  jqChart: async (req, res) => {
+    try {
+      const id = req.decoded._id;
+      let chartData = {
+        title: 'Revenue 2014 YTD',
+        description: '(U.S. $ in thousands)',
+        ranges: [
+          { startValue: 0, endValue: 200, color: '#00C5FF', opacity: 0.1 },
+          { startValue: 200, endValue: 250, color: '#00C5FF', opacity: 0.3 },
+          { startValue: 250, endValue: 300, color: '#00C5FF', opacity: 0.5 }
+        ],
+        pointer: {
+          value: 270,
+          label: 'Revenue 2014 YTD',
+          size: '25%',
+          color: 'Black'
+        },
+        target: {
+          value: 260,
+          label: 'Revenue 2013 YTD',
+          size: 4,
+          color: 'Black'
+        },
+        ticks: {
+          position: 'both',
+          interval: 50,
+          size: 10
+        }
+      };
+      const charts = [];
+      const programs = await ProgramModel.find({
+        user: id,
+        programEnds: 'No'
+      });
+      for (const program of programs) {
+        const totalCommission = program.btc * 2;
+        chartData.ranges[0].endValue = (totalCommission * 0.5).toFixed(2);
+        chartData.ranges[1].startValue = (totalCommission * 0.5).toFixed(2);
+        chartData.ranges[1].endValue = (totalCommission * 0.75).toFixed(2);
+        chartData.ranges[2].startValue = (totalCommission * 0.75).toFixed(2);
+        chartData.ranges[2].endValue = totalCommission;
+        chartData.ticks.interval = totalCommission / 4;
+        chartData.title = program.plan.name;
+        chartData.description = 'Program Progress in (BCH)';
+        chartData.target.value = program.btc * 1.8;
+        chartData.pointer.value = program.totalCommission.toFixed(4);
+        charts.push(chartData);
+      }
+      return res.status(200).json({
+        status: "Successful",
+        data: charts
       });
     } catch (error) {
       return res.status(500).json({

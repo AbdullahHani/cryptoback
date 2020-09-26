@@ -47,7 +47,7 @@ module.exports = {
         user = await UsersModel.create({
             name: name,
             email: email,
-            userName: userName,
+            userName: userName.toLowerCase(),
             password: password,
             verificationCode: verificationCode.toString()
         });
