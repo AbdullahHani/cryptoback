@@ -104,6 +104,11 @@ const UserSchema = new Schema({
         trim: true,
         enum: ['Yes', 'No'],
         default: 'No'
+    },
+    isDeleted: {
+        type: String,
+        enum: ['Yes', 'No'],
+        default: "No"
     }
 },{timestamps: true});
 

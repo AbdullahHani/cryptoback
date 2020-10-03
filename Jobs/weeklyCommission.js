@@ -22,49 +22,51 @@ weeklyCommissionQueue.process( async (job, done) => {
         payWeek: 'Yes'
     });
     for (const program of programs) {
-        const commission = program.totalCommission + program.weeklyCommission;
-        await ProgramModel.updateOne({ _id: program._id }, {
-            totalCommission: commission,
-            weeklyCommission: 0,
-            payWeek: 'No'
-        });
-        const runningPrograms = await ProgramModel.find({
-            user: program.user._id,
-            programEnds: 'No'
-        }).count();
-        // const user = await UserModel.findOne({_id: program.user._id});
-        // const balance = user.balance + program.weeklyCommission;
-        // const payoutAmount = user.totalPayouts + program.weeklyCommission;
-        // await UserModel.updateOne({_id: program.user._id}, {
-        //     balance: balance,
-        //     totalPayouts: payoutAmount,
-        //     plan: program.plan._id
-        // });
-        await PayoutModel.create({
-            user: program.user._id,
-            amount: program.weeklyCommission,
-            plan: program.plan._id,
-            program: program._id,
-            hash: program.hash
-        });
-        // let message = '';
-        // message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
-        //             `<p>${program.weeklyCommission.toFixed(4)} BCH have been successfully added to your account from your ${program.plan.name} plan subscribed. </p><br>` +
-        //             '<br><h3><b>Thank You!</b></h3>'
-        // const msg = {
-        //     to: user.email,
-        //     from: process.env.SENDER_EMAIL,
-        //     subject: `Odeffe: Weekly Payout`,
-        //     text: message,
-        //     html: message
-        // };
-        // await sgMail.send(msg);
-        if (runningPrograms === 0) {
-            await UserModel.updateOne({_id: program.user._id}, {
-                status: 'Inactive'
+        if (program.user.isDeleted !== 'Yes' && program.user.block !== 'Yes') {
+            const commission = program.totalCommission + program.weeklyCommission;
+            await ProgramModel.updateOne({ _id: program._id }, {
+                totalCommission: commission,
+                weeklyCommission: 0,
+                payWeek: 'No'
             });
+            const runningPrograms = await ProgramModel.find({
+                user: program.user._id,
+                programEnds: 'No'
+            }).count();
+            // const user = await UserModel.findOne({_id: program.user._id});
+            // const balance = user.balance + program.weeklyCommission;
+            // const payoutAmount = user.totalPayouts + program.weeklyCommission;
+            // await UserModel.updateOne({_id: program.user._id}, {
+            //     balance: balance,
+            //     totalPayouts: payoutAmount,
+            //     plan: program.plan._id
+            // });
+            await PayoutModel.create({
+                user: program.user._id,
+                amount: program.weeklyCommission,
+                plan: program.plan._id,
+                program: program._id,
+                hash: program.hash
+            });
+            // let message = '';
+            // message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
+            //             `<p>${program.weeklyCommission.toFixed(4)} BCH have been successfully added to your account from your ${program.plan.name} plan subscribed. </p><br>` +
+            //             '<br><h3><b>Thank You!</b></h3>'
+            // const msg = {
+            //     to: user.email,
+            //     from: process.env.SENDER_EMAIL,
+            //     subject: `Odeffe: Weekly Payout`,
+            //     text: message,
+            //     html: message
+            // };
+            // await sgMail.send(msg);
+            if (runningPrograms === 0) {
+                await UserModel.updateOne({_id: program.user._id}, {
+                    status: 'Inactive'
+                });
+            }
+            table += `<tr><td style="border: 1px solid black;">${program.user.userName}</td><td style="border: 1px solid black;">${program.user.email}</td><td style="border: 1px solid black;">${program.weeklyCommission}</td><td style="border: 1px solid black;">${program.user.walletId}</td></tr>`;
         }
-        table += `<tr><td style="border: 1px solid black;">${program.user.userName}</td><td style="border: 1px solid black;">${program.user.email}</td><td style="border: 1px solid black;">${program.weeklyCommission}</td><td style="border: 1px solid black;">${program.user.walletId}</td></tr>`;
     }
     table += '</table><br>';
     let emailMessage = '';

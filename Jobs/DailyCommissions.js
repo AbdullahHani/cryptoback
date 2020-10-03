@@ -33,6 +33,7 @@ dailyCommissionQueue.process( async (job, done) => {
     // const usdRate = usdValue / bchValue;
     // const bchRate = bchValue / usdValue;
     for (const program of programs) {
+        if (program.user.isDeleted !== 'Yes' && program.user.block !== 'Yes' ) {
             commissionToAdd = 0;
             const tCommission = program.totalCommission;
             const dCommission = (program.workingCapital * program.plan.dailyCommission / 100);
@@ -85,6 +86,7 @@ dailyCommissionQueue.process( async (job, done) => {
                 plan: program.plan._id,
                 program: program._id
             });
+        }
     }
     done();
 });

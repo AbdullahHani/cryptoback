@@ -274,8 +274,10 @@ module.exports = {
         chartData.ticks.interval = totalCommission / 4;
         chartData.title = program.plan.name;
         chartData.description = 'Program Progress in (BCH)';
-        chartData.target.value = program.btc * 1.8;
+        chartData.target.value = (program.btc * 1.8).toFixed(4);
+        chartData.target.label = `Target: ${(program.btc * 1.8).toFixed(4)}`;
         chartData.pointer.value = program.totalCommission.toFixed(4);
+        chartData.pointer.label = `Current: ${program.totalCommission.toFixed(4)}`;
         charts.push(chartData);
       }
       return res.status(200).json({
