@@ -234,8 +234,8 @@ module.exports = {
     try {
       const id = req.decoded._id;
       let chartData = {
-        title: 'Revenue 2014 YTD',
-        description: '(U.S. $ in thousands)',
+        title: 'Plan Progress',
+        description: '(Amount in BCH)',
         ranges: [
           { startValue: 0, endValue: 200, color: '#00C5FF', opacity: 0.1 },
           { startValue: 200, endValue: 250, color: '#00C5FF', opacity: 0.3 },
@@ -243,13 +243,13 @@ module.exports = {
         ],
         pointer: {
           value: 270,
-          label: 'Revenue 2014 YTD',
+          label: '',
           size: '25%',
           color: 'Black'
         },
         target: {
           value: 260,
-          label: 'Revenue 2013 YTD',
+          label: '',
           size: 4,
           color: 'Black'
         },
