@@ -98,7 +98,7 @@ module.exports = {
               txid: affiliation.txid
             });
             const affiliationNew = await AffiliationModel.findOne({_id: affiliation._id});
-            const user = await UsersModel.findOne({userName: affiliation.user});
+            const user = await UsersModel.findOne({userName: affiliation.affiliationNew.referralId.userName});
             const balance = user.balance + affiliationNew.amount;
             const totalPayouts = user.totalPayouts + affiliationNew.amount;
             await UsersModel.updateOne({_id: user._id}, {
@@ -109,7 +109,7 @@ module.exports = {
             message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
                         '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Affiliation Bonus Transferred</h2><br>';
             message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
-                        `<p>We transferred ${affiliationNew.amount.toFixed(4)} BTC to your wallet as an affiliation bonus. The transaction hash of the transferred amount is: ${affiliation.txid}. </p>` +
+                        `<p>We transferred ${affiliationNew.amount.toFixed(4)} BCH to your wallet as an affiliation bonus. The transaction hash of the transferred amount is: ${affiliation.txid}. </p>` +
                         '<br><p><b>Regards:</b></p><br><p>Odeffe</p>';
             message += '<div style="display: flex; justify-content: flex-start;">' + 
                         '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
