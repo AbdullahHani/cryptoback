@@ -146,7 +146,7 @@ module.exports = {
           message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
                       '<h2 style="font-weight: 700; text-decoration: underline; text-align:center">Weekly Payout Transferred</h2><br>';
           message += `<h3><b>Dear ${user.name}!</b></h3><br>` +
-                      `<p>We transferred ${payoutNew.amount.toFixed(4)} BTC to your wallet. The transaction hash of the transferred amount is: ${payout.txid}. </p>` +
+                      `<p>We transferred ${payoutNew.amount.toFixed(4)} BCH to your wallet. The transaction hash of the transferred amount is: ${payout.txid}. </p>` +
                       '<br><p><b>Regards:</b></p><br><p>Odeffe</p>';
           message += '<div style="display: flex; justify-content: flex-start;">' + 
                       '<a href="https://twitter.com/OdeffeOfficial" target="_blank"><img src="https://s12.directupload.net/images/200827/9ow4ycu5.png" height="50"/></a>' +
@@ -183,7 +183,7 @@ module.exports = {
         chart: {
           caption: "",
           subcaption: "Program Progress",
-          numbersuffix: "BTC",
+          numbersuffix: "BCH",
           theme: "fusion"
         },
         colorrange: {

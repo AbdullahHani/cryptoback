@@ -101,9 +101,11 @@ module.exports = {
             const user = await UsersModel.findOne({userName: affiliation.affiliationNew.referralId.userName});
             const balance = user.balance + affiliationNew.amount;
             const totalPayouts = user.totalPayouts + affiliationNew.amount;
+            const affiliationBonus = user.affiliationBonus + affiliationNew.amount;
             await UsersModel.updateOne({_id: user._id}, {
               balance: balance,
-              totalPayouts: totalPayouts
+              totalPayouts: totalPayouts,
+              affiliationBonus: affiliationBonus
             });
             let message = '';
             message= '<img src="https://s12.directupload.net/images/200827/6xtdhlvh.png" style="height:60px;"/><br>' +
