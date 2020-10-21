@@ -29,17 +29,19 @@ module.exports = {
         userName = userName.toLowerCase();
         let token = "", user = {};
         let existingAccount = await UsersModel.findOne({email: email});
-        if ( existingAccount.isDeleted === 'Yes' || existingAccount.block === 'Yes') {
-            return res.status(409).json({
-                status: "Error",
-                errorEmail: "This user has been blocked by odeffe. Contact support@odeffe.com for any query."
-            });
-        }
+        
         if (existingAccount) {
-            return res.status(409).json({
-                status: "Error",
-                errorEmail: "Email already taken."
-            });
+            if ( existingAccount.isDeleted === 'Yes' || existingAccount.block === 'Yes') {
+                return res.status(409).json({
+                    status: "Error",
+                    errorEmail: "This user has been blocked by odeffe. Contact support@odeffe.com for any query."
+                });
+            } else {
+                return res.status(409).json({
+                    status: "Error",
+                    errorEmail: "Email already taken."
+                });
+            }
         }
         existingAccount = await UsersModel.findOne({userName: userName}).count();
 
