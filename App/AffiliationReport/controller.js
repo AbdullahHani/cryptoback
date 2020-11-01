@@ -98,7 +98,7 @@ module.exports = {
               txid: affiliation.txid
             });
             const affiliationNew = await AffiliationModel.findOne({_id: affiliation._id});
-            const user = await UsersModel.findOne({userName: affiliation.affiliationNew.referralId.userName});
+            const user = await UsersModel.findOne({userName: affiliationNew.referralId.userName});
             const balance = user.balance + affiliationNew.amount;
             const totalPayouts = user.totalPayouts + affiliationNew.amount;
             const affiliationBonus = user.affiliationBonus + affiliationNew.amount;
