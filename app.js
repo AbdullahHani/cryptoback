@@ -28,10 +28,33 @@ environment.config();
 
 const app = express();
 
+var whitelist = [
+  'https://www.odeffe.com',
+  'http://odeffe-admin.herokuapp.com'
+];
+// var corsOptions = function (req, callback) {
+//   console.log(req.header('Origin'))
+//   if (whitelist.indexOf(req.header('Origin')) !== -1) {
+//     callback(null, true);
+//   } else {
+//     callback(new Error('Request not allowed'));
+//   }
+// }
+var corsOptions = {
+  origin: function (origin, callback) {
+  	if (whitelist.indexOf(origin) !== -1) {
+    	callback(null, true);
+    } else {
+      callback(new Error(`Not allowed by CORS ${origin}`));
+    }
+  }
+}
+//if (process.env['NODE_ENV'] === 'production') {
+  app.options('*', cors(corsOptions));
+  // app.use(cors(corsOptions));
+//}
+app.use(cors(corsOptions));
 app.set('view engine', 'ejs');
-
-app.options('*', cors());
-app.use(cors());
 
 const run = async () => {
   await mongoose.connect(process.env.MONGODB_URI, {
