@@ -14,3 +14,4 @@ mongodb://localhost:27017/[your db name: could be any]
 ```
 npm start
 ```
+# cryptofront
